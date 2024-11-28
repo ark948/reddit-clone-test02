@@ -1,0 +1,2 @@
+1. setting up
+2. setting up database
