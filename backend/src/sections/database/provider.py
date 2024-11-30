@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 from sqlmodel import create_engine
 from sqlmodel import SQLModel
+from typing import AsyncGenerator
 
 
 # local imports
@@ -25,7 +26,7 @@ async def init_db():
         print(result.all())
 
 
-async def get_async_session() -> AsyncSession:
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     Session = sessionmaker(
         bind=async_engine,
         class_=AsyncSession,
@@ -33,4 +34,10 @@ async def get_async_session() -> AsyncSession:
     )
 
     async with Session() as session:
-        yield session
+        try:
+            yield session
+        except:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()

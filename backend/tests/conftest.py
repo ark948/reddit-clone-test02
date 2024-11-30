@@ -3,6 +3,7 @@ import asyncio
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
+from sqlalchemy.ext.asyncio import create_async_engine
 
 
 # local imports
@@ -11,14 +12,15 @@ from src.sections.database.dependencies import get_async_session
 from src.sections.database.models import User
 
 
+engine = create_async_engine(
+    url='postgresql+asyncpg://...',
+    echo=True,
+)
+
+
 @pytest.fixture(name='session_fixture')
 def session_fixture():
-    engine = create_engine(
-        # in-memory database
-        "sqlite://", 
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool
-    )
+    
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         yield session

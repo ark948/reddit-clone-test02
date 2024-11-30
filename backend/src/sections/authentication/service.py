@@ -14,21 +14,25 @@ class UserService:
         self.session = session
 
 
-    async def create_new_user(self, user_data: UserCreateModel) -> Dict:
+    async def create_new_user(self, user_data: UserCreateModel) -> User | None:
         new_user_dict = user_data.model_dump()
         new_user = User(**new_user_dict)
         new_user.password_hash = genereate_password_hash(new_user_dict['password'])
         try:
             self.session.add(new_user)
-        except Exception as error:
-            return {"status": "ERROR", "message": str(error)}
-        try:
             await self.session.commit()
             await self.session.refresh(new_user)
-        except IntegrityError as error:
-            await self.session.rollback()
-            return {"status": "ERROR", "message": str(error)}
-        return {
-            "status": "SUCCESS",
-            "user": new_user
-        }
+        except (IntegrityError, Exception) as error:
+            print(error)
+            return None
+        return new_user
+    
+
+    async def get_user(self, user_id: int) -> User | None:
+        try:
+            user = await self.session.get(User, user_id)
+        except Exception as error:
+            print(error)
+            return None
+        
+        return user
