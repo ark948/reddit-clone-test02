@@ -8,7 +8,7 @@ from typing import AsyncGenerator
 
 
 # local imports
-from src.configs import Config
+from src.configs.settings import Config
 
 
 async_engine = AsyncEngine(
