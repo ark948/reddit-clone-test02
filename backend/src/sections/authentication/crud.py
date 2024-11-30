@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import (
     insert
 )
@@ -25,7 +26,14 @@ async def create_user(user_data: UserCreateModel, session: AsyncSessionDep):
             "status": "ERROR",
             "message": str(error)
         }
-    await session.commit()
+    try:
+        await session.commit()
+    except IntegrityError as error:
+        await session.rollback()
+        return {
+            "status": "ERROR",
+            "message": str(error)
+        }
     return {
         "status": "SUCCESS",
         "user": new_user

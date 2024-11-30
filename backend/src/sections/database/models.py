@@ -14,8 +14,8 @@ class User(SQLModel, table=True):
 
     id: int = Field(primary_key=True)
     uid: uuid.UUID = Field(sa_column=Column(pg.UUID, nullable=False, default=uuid.uuid4))
-    username: str
-    email: str
+    username: str = Field(unique=True, nullable=False)
+    email: str = Field(unique=True, nullable=False)
     first_name: str = Field(nullable=True)
     last_name: str = Field(nullable=True)
     role: str = Field(sa_column=Column(pg.VARCHAR, nullable=False, server_default="user"))

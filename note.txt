@@ -15,3 +15,11 @@
     > alembic init -t async <migrationFolderName>
 4. setting up authentication
     beginning with user model
+    to add password hashing, following packages must be isntalled:
+    > pip install passlib, bcrypt
+
+
+
+
+packages to install:
+pytest, httpx
