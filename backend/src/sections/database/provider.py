@@ -17,10 +17,10 @@ async_engine = AsyncEngine(
 
 async def init_db():
     async with async_engine.begin() as conn:
-        # import models
+        from src.sections.database.models import User
 
         await conn.run_sync(SQLModel.metadata.create_all)
-        statement = text("SELECT 'hello';")
+        statement = text("SELECT 'database connected';")
         result = await conn.execute(statement)
         print(result.all())
 
