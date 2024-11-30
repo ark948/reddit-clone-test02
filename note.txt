@@ -1,2 +1,14 @@
 1. setting up
-2. setting up database
+    base fastapi application structure
+2. setting up environment variables
+    (database needs asyncpg)
+    > pip install asyncpg
+    (if intent to use dotenv)> pip install python-dotenv (WARNING: using 'pip install dotenv' will result in failure)
+    (if intent to use pydantic_settings - recommended)> pip install pydantic_settings
+3. setting up database
+    creating connection and session
+    > psql --username=postgres (password: 1234)
+    creating database session dependency
+    connecting main app instance to database initializer
+4. setting up authentication
+    beginning with user model
