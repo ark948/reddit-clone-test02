@@ -1,5 +1,6 @@
+from sqlmodel import select
 from sqlalchemy.exc import IntegrityError
-from typing import Dict
+from typing import Dict, List
 
 # local imports
 from src.sections.database.dependencies import AsyncSessionDep
@@ -14,6 +15,28 @@ class UserService:
         self.session = session
 
 
+
+    async def get_user(self, user_id: int) -> User | None:
+        try:
+            user = await self.session.get(User, user_id)
+        except Exception as error:
+            print(error)
+            return None
+        
+        return user
+    
+
+    async def get_all_users(self) -> List[User] | None:
+        try:
+            stmt = select(User)
+            users_list = await self.session.scalars(stmt)
+        except Exception as error:
+            print(error)
+            return None
+        
+        return users_list.all()
+
+
     async def create_new_user(self, user_data: UserCreateModel) -> User | None:
         new_user_dict = user_data.model_dump()
         new_user = User(**new_user_dict)
@@ -26,13 +49,3 @@ class UserService:
             print(error)
             return None
         return new_user
-    
-
-    async def get_user(self, user_id: int) -> User | None:
-        try:
-            user = await self.session.get(User, user_id)
-        except Exception as error:
-            print(error)
-            return None
-        
-        return user
