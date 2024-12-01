@@ -1,3 +1,4 @@
+from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from typing import Dict
 from sqlmodel import (
@@ -38,3 +39,14 @@ async def get_user(user_id: int, session: AsyncSessionDep) -> User | None:
         return None
     
     return user
+
+
+async def get_user_v2(user_id: int, session: AsyncSession):
+    try:
+        user = await session.get(User, user_id)
+    except Exception as error:
+        print(error)
+        return None
+    
+    return user
+

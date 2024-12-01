@@ -1,6 +1,8 @@
 from typing import Dict, Union
+from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import (
     APIRouter,
+    Depends,
     HTTPException,
     status
 )
@@ -12,6 +14,7 @@ from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.authentication.schemas import UserCreateModel, UserModel
 from src.sections.authentication import crud
 from src.sections.authentication.dependencies import UserServiceDep
+from src.sections.database.provider import get_async_session
 
 
 router = APIRouter(prefix='/auth', tags=['auth'])
@@ -46,7 +49,13 @@ async def get_user_object(user_id: int, session: AsyncSessionDep):
 
 
 @router.get('/get-user-v2/{user_id}', response_model=Union[User, None], status_code=status.HTTP_200_OK)
-async def get_user_object(user_id: int, u: UserServiceDep):
+async def get_user_object_v2(user_id: int, u: UserServiceDep):
     response = await u.get_user(user_id=user_id)
+    return response
+
+
+@router.get('/get-user-v3/{user_id}', response_model=Union[User, None], status_code=status.HTTP_200_OK)
+async def get_user_object_v3(user_id: int, session: AsyncSession = Depends(get_async_session)):
+    response = await crud.get_user_v2(user_id=user_id, session=session)
     return response
     
