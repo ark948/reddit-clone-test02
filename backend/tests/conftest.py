@@ -23,11 +23,7 @@ from src.sections.authentication.hash import genereate_password_hash
 from src.configs.settings import Config
 
 
-async_engine = create_async_engine(
-    url=Config.DB_URL,
-    echo=False,
-    poolclass=NullPool
-)
+async_engine = create_async_engine(url=Config.TEST_DB_URL, echo=False, poolclass=NullPool)
 
 
 @pytest_asyncio.fixture(scope="function")

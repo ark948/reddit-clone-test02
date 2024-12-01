@@ -2,6 +2,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from typing import Dict
 from sqlmodel import (
+    select,
     insert
 )
 
@@ -50,3 +51,12 @@ async def get_user_v2(user_id: int, session: AsyncSession):
     
     return user
 
+
+async def get_all_users(session: AsyncSession):
+    try:
+        stmt = select(User)
+        results = await session.exec(stmt)
+    except Exception as error:
+        print(error)
+        return None
+    return results.all()

@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, List
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import (
     APIRouter,
@@ -54,8 +54,13 @@ async def get_user_object_v2(user_id: int, u: UserServiceDep):
     return response
 
 
-@router.get('/get-user-v3/{user_id}', response_model=Union[User, None], status_code=status.HTTP_200_OK)
+@router.get('/get-user-v3/{user_id}', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def get_user_object_v3(user_id: int, session: AsyncSession = Depends(get_async_session)):
     response = await crud.get_user_v2(user_id=user_id, session=session)
     return response
-    
+
+
+@router.get('/get-all-users', response_model=List[UserModel], status_code=status.HTTP_200_OK)
+async def get_all_users(session: AsyncSession=Depends(get_async_session)):
+    resposne = await crud.get_all_users(session=session)
+    return resposne
