@@ -1,5 +1,6 @@
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlmodel import select, insert
 from fastapi import (
     APIRouter,
     Depends,
@@ -15,6 +16,7 @@ from src.sections.authentication.schemas import UserCreateModel, UserModel
 from src.sections.authentication import crud
 from src.sections.authentication.dependencies import UserServiceDep
 from src.sections.database.provider import get_async_session
+from src.sections.authentication.hash import genereate_password_hash
 
 
 router = APIRouter(prefix='/auth', tags=['auth'])
@@ -60,7 +62,42 @@ async def get_user_object_v3(user_id: int, session: AsyncSession = Depends(get_a
     return response
 
 
+# test not working (no exec command)
 @router.get('/get-all-users', response_model=List[UserModel], status_code=status.HTTP_200_OK)
 async def get_all_users(session: AsyncSession=Depends(get_async_session)):
     resposne = await crud.get_all_users(session=session)
     return resposne
+
+
+@router.get('/get-all-users-v2', response_model=List[UserModel], status_code=status.HTTP_200_OK)
+async def get_all_users(session: AsyncSession=Depends(get_async_session)):
+    try:
+        stmt = select(User)
+        users = await session.scalars(stmt)
+    except Exception as error:
+        print(error)
+        return None
+    return users.all()
+
+
+@router.get('/get-user-v4/{user_id}', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
+async def get_user_object_v4(user_id: int, session: AsyncSession=Depends(get_async_session)):
+    try:
+        stmt = select(User).where(User.id==user_id)
+        user = await session.scalar(stmt)
+    except Exception as error:
+        print(error)
+        return None
+    return user
+
+
+@router.post('/create-user', response_model=Tuple, status_code=status.HTTP_201_CREATED)
+async def create_user_account_v3(user_data: UserCreateModel, session: AsyncSession=Depends(get_async_session)):
+    try:
+        stmt = insert(User).values(username=user_data.username, email=user_data.email, password_hash=genereate_password_hash(user_data.password))
+        result = await session.execute(stmt)
+        await session.commit()
+    except Exception as error:
+        print(error)
+        return None
+    return result.inserted_primary_key

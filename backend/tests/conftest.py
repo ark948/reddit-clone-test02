@@ -51,7 +51,8 @@ async def async_client(async_db):
     def override_get_db():
         yield async_db
     app.dependency_overrides[get_async_session] = override_get_db
-    return AsyncClient(transport=ASGITransport(app=app), base_url="http://localhost")
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://localhost") as client:
+        yield client
 
 
 # pytest-asyncio provides event loop
