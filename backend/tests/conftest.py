@@ -55,4 +55,12 @@ async def async_client(async_db):
         yield client
 
 
+@pytest_asyncio.fixture(scope="function")
+async def sample_user(async_db: AsyncSession):
+    user_obj = User(username="test01", email="test01@email.com", password_hash=genereate_password_hash('test123'))
+    async_db.add(user_obj)
+    await async_db.commit()
+    return user_obj
+
+
 # pytest-asyncio provides event loop

@@ -79,3 +79,16 @@ async def test_user_service_get_all_users(async_db: AsyncSession):
     assert result[1].id == 2
     assert result[0].username == "tester01"
     assert result[1].username == "tester02"
+
+
+
+@pytest.mark.asyncio
+async def test_user_service_get_user_from_fixture(async_db: AsyncSession, sample_user):
+    u = UserService(session=async_db)
+    user_obj = await u.get_user(1)
+
+    assert user_obj.id == sample_user.id
+    assert user_obj.username == sample_user.username
+    assert isinstance(user_obj, User)
+    assert verify_password('test123', user_obj.password_hash) == True
+    assert verify_password('test123', sample_user.password_hash) == True
