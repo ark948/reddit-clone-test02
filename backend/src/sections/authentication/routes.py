@@ -32,6 +32,7 @@ async def auth_test():
     return {'message': "auth test route successful"}
 
 
+# test SKIPPED
 # test not working (no exec command)
 @router.get('/get-all-users', response_model=List[UserModel], status_code=status.HTTP_200_OK)
 async def get_all_users(session: AsyncSession=Depends(get_async_session)):
@@ -39,8 +40,9 @@ async def get_all_users(session: AsyncSession=Depends(get_async_session)):
     return resposne
 
 
+# test done
 @router.get('/get-all-users-v2', response_model=List[UserModel], status_code=status.HTTP_200_OK)
-async def get_all_users(session: AsyncSession=Depends(get_async_session)):
+async def get_all_users_v2(session: AsyncSession=Depends(get_async_session)):
     try:
         stmt = select(User)
         users = await session.scalars(stmt)
@@ -50,25 +52,26 @@ async def get_all_users(session: AsyncSession=Depends(get_async_session)):
     return users.all()
 
 
+# test done
 @router.get('/get-user/{user_id}', response_model=Union[User, None], status_code=status.HTTP_200_OK)
 async def get_user_object(user_id: int, session: AsyncSessionDep):
     response = await crud.get_user(user_id=user_id, session=session)
     return response
 
-
+# test done
 @router.get('/get-user-v2/{user_id}', response_model=Union[User, None], status_code=status.HTTP_200_OK)
 async def get_user_object_v2(user_id: int, u: UserServiceDep):
     response = await u.get_user(user_id=user_id)
     return response
 
-
+# test done
 @router.get('/get-user-v3/{user_id}', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def get_user_object_v3(user_id: int, session: AsyncSession = Depends(get_async_session)):
     response = await crud.get_user_v2(user_id=user_id, session=session)
     return response
 
 
-
+# test done
 @router.get('/get-user-v4/{user_id}', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def get_user_object_v4(user_id: int, session: AsyncSession=Depends(get_async_session)):
     try:
@@ -80,6 +83,7 @@ async def get_user_object_v4(user_id: int, session: AsyncSession=Depends(get_asy
     return user
 
 
+# test done
 @router.post('/signup', response_model=UserModel, status_code=status.HTTP_201_CREATED)
 async def create_user_account(user_data: UserCreateModel, session: AsyncSessionDep):
     response = await crud.create_user(user_data, session)
@@ -89,6 +93,7 @@ async def create_user_account(user_data: UserCreateModel, session: AsyncSessionD
                         detail="There was a problem, please check your input.")
 
 
+# test done
 @router.post('/signup-v2', response_model=UserModel, status_code=status.HTTP_201_CREATED)
 async def create_user_account_v2(user_data: UserCreateModel, u: UserServiceDep):
     response = await u.create_new_user(user_data)
@@ -98,7 +103,7 @@ async def create_user_account_v2(user_data: UserCreateModel, u: UserServiceDep):
                         detail="There was a problem, please check your input.")
 
 
-
+# test done
 @router.post('/signup-v3', response_model=Tuple, status_code=status.HTTP_201_CREATED)
 async def create_user_account_v3(user_data: UserCreateModel, session: AsyncSession=Depends(get_async_session)):
     try:
