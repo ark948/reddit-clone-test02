@@ -22,10 +22,23 @@ async def test_auth_test_route(async_client: AsyncClient):
     assert resp.json()['message'] == "auth test route successful"
 
 
-@pytest.mark.skip
 @pytest.mark.asyncio
-async def test_auth_get_all_users(async_client: AsyncClient):
-    pass
+async def test_auth_get_all_users(async_client: AsyncClient, sample_user):
+    resp = await async_client.get('auth/get-all-users-v2')
+
+    data = resp.json()
+
+    assert data[0]["id"] == sample_user.id
+    assert data[0]["username"] == sample_user.username
+    assert data[0]["email"] == sample_user.email
+
+
+@pytest.mark.asyncio
+async def test_auth_get_all_users_no_data(async_client: AsyncClient):
+    resp = await async_client.get('auth/get-all-users-v2')
+
+    assert resp.status_code == 200
+    assert resp.json() == []
 
 
 @pytest.mark.asyncio

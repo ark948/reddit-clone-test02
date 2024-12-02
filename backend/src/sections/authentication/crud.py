@@ -16,20 +16,15 @@ from src.sections.authentication.schemas import (
 )
 
 
-async def create_user(user_data: UserCreateModel, session: AsyncSessionDep) -> User | None:
-    new_user_dict = user_data.model_dump()
-    new_user = User(**new_user_dict)
-    new_user.password_hash = genereate_password_hash(new_user_dict['password'])
+
+async def get_all_users(session: AsyncSession):
     try:
-        session.add(new_user)
-        await session.commit()
-        await session.refresh(new_user)
+        stmt = select(User)
+        results = await session.scalars(stmt)
     except Exception as error:
         print(error)
-        await session.rollback()
         return None
-    return new_user
-
+    return results.all()
 
 
 async def get_user(user_id: int, session: AsyncSessionDep) -> User | None:
@@ -42,7 +37,7 @@ async def get_user(user_id: int, session: AsyncSessionDep) -> User | None:
     return user
 
 
-async def get_user_v2(user_id: int, session: AsyncSession):
+async def get_user_v2(user_id: int, session: AsyncSession) -> User | None:
     try:
         user = await session.get(User, user_id)
     except Exception as error:
@@ -52,11 +47,17 @@ async def get_user_v2(user_id: int, session: AsyncSession):
     return user
 
 
-async def get_all_users(session: AsyncSession):
+async def create_user(user_data: UserCreateModel, session: AsyncSessionDep) -> User | None:
+    new_user_dict = user_data.model_dump()
+    new_user = User(**new_user_dict)
+    new_user.password_hash = genereate_password_hash(new_user_dict['password'])
     try:
-        stmt = select(User)
-        results = await session.exec(stmt)
+        session.add(new_user)
+        await session.commit()
+        await session.refresh(new_user)
     except Exception as error:
         print(error)
+        await session.rollback()
         return None
-    return results.all()
+    
+    return new_user

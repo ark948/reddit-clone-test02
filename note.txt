@@ -17,6 +17,12 @@
     beginning with user model
     to add password hashing, following packages must be isntalled:
     > pip install passlib, bcrypt
+    authentication process:
+        hash user's info
+        put them in a token
+        create login route
+        succeessful login = create and send token
+        succeessful logout = block token
 
 
 

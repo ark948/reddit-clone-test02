@@ -1,6 +1,6 @@
 from sqlmodel import select
 from sqlalchemy.exc import IntegrityError
-from typing import Dict, List
+from typing import Dict, List, Union
 
 # local imports
 from src.sections.database.dependencies import AsyncSessionDep
@@ -35,6 +35,15 @@ class UserService:
             return None
         
         return users_list.all()
+    
+    async def get_user_by_email(self, email: str) -> Union[User, None]:
+        try:
+            stmt = select(User).where(User.email == email)
+            user = await self.session.scalar(stmt)
+        except Exception as error:
+            print(error)
+            return None
+        return user
 
 
     async def create_new_user(self, user_data: UserCreateModel) -> User | None:

@@ -21,18 +21,13 @@ from src.sections.authentication.hash import genereate_password_hash
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
-# routes order
-# get all users
-# get one user
-# create user (signup)
-
 
 @router.get('/test')
 async def auth_test():
     return {'message': "auth test route successful"}
 
 
-# test SKIPPED
+# test SKIPPED (fixed) -> test added
 # test not working (no exec command)
 @router.get('/get-all-users', response_model=List[UserModel], status_code=status.HTTP_200_OK)
 async def get_all_users(session: AsyncSession=Depends(get_async_session)):
