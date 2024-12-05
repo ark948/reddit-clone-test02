@@ -29,8 +29,13 @@
             schemas -> UserLoginSchema
             routes -> login route
             config -> added jwt secret and jwt algorithm
+        auth commit 02:
+            tokens -> AccessTokenBearer
+            routes -> user_profile
+
 
 users:
+    id = 6
     johndoe1
     johndoe@gmail.com
     test123

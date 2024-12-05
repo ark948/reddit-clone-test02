@@ -1,5 +1,6 @@
+from typing import Annotated
 import pydantic
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from contextlib import asynccontextmanager
 
 
@@ -25,10 +26,10 @@ app.include_router(auth_router)
 async def test_route():
     return {"message": "test successful"}
 
-# to be able to send body request, pydantic model is required
+# to be able to send body request, either use pydantic model or Body from fastapi
 class Message(pydantic.BaseModel):
     text: str
 
 @app.post('/test')
-async def test_post_route(message: Message):
-    return {"input": message.text}
+async def test_post_route(message: Annotated[str, Body(embed=True)]):
+    return {"input": message}

@@ -46,6 +46,14 @@ async def get_user_v2(user_id: int, session: AsyncSession) -> User | None:
     
     return user
 
+async def get_user_by_email(email: str, session: AsyncSessionDep) -> User | None:
+    try:
+        user = await session.scalar(select(User).where(User.email == email))
+    except Exception as error:
+        print(error)
+        return None
+    return user
+
 
 async def create_user(user_data: UserCreateModel, session: AsyncSessionDep) -> User | None:
     new_user_dict = user_data.model_dump()

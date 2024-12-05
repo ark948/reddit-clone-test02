@@ -1,4 +1,4 @@
-from typing import Dict, Union, List, Tuple
+from typing import Dict, Union, List, Tuple, Annotated
 from sqlmodel.ext.asyncio.session import AsyncSession
 from datetime import timedelta
 from sqlmodel import select, insert
@@ -7,7 +7,8 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
-    status
+    status,
+    Body
 )
 
 
@@ -19,6 +20,7 @@ from src.sections.authentication.dependencies import UserServiceDep
 from src.sections.authentication.service import UserService
 from src.sections.database.provider import get_async_session
 from src.sections.authentication.hash import genereate_password_hash
+from src.sections.authentication.tokens import AccessTokenBearer
 from src.sections.authentication.utils import (
     create_access_token, decode_token, verify_password
 )
@@ -126,6 +128,13 @@ async def create_user_account_v3(user_data: UserCreateModel, session: AsyncSessi
     return result.inserted_primary_key
 
 
+@router.get('/me', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
+async def user_profile(session: AsyncSessionDep, user_data=Depends(AccessTokenBearer())):
+    response = await crud.get_user_by_email(email=user_data["user"]["email"], session=session)
+    return response
+
+
+# auth mechanism
 @router.post('/login')
 async def login_users(login_data: UserLoginModel, session: AsyncSession = Depends(get_async_session)):
     email = login_data.email
