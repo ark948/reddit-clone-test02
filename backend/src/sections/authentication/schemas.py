@@ -26,3 +26,9 @@ class UserCreateModel(BaseModel):
     username: str = Field(max_length=16)
     email: str = Field(max_length=42)
     password: str = Field(min_length=6)
+
+
+# auth mechanism
+class UserLoginModel(BaseModel):
+    email: str = Field(max_length=40)
+    password: str = Field(min_length=6)

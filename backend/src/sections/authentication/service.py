@@ -36,6 +36,7 @@ class UserService:
         
         return users_list.all()
     
+    # auth mechanism
     async def get_user_by_email(self, email: str) -> Union[User, None]:
         try:
             stmt = select(User).where(User.email == email)
@@ -44,6 +45,10 @@ class UserService:
             print(error)
             return None
         return user
+    
+    async def user_exists(self, email: str) -> bool:
+        user = await self.get_user_by_email(email)
+        return True if user is not None else False
 
 
     async def create_new_user(self, user_data: UserCreateModel) -> User | None:

@@ -24,6 +24,16 @@
         succeessful login = create and send token
         succeessful logout = block token
 
+        auth commit 01:
+            utils -> create token, decode_token
+            schemas -> UserLoginSchema
+            routes -> login route
+            config -> added jwt secret and jwt algorithm
+
+users:
+    johndoe1
+    johndoe@gmail.com
+    test123
 
 
 
