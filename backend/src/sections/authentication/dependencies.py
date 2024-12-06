@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 from src.sections.authentication.service import UserService
 from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.database.provider import get_async_session
+from src.sections.authentication.tokens import TokenBearer
 
 
 
@@ -16,3 +17,6 @@ async def get_users_service(session: AsyncSession = Depends(get_async_session)) 
 
 
 UserServiceDep = Annotated[UserService, Depends(get_users_service)]
+
+
+token_req = Depends(TokenBearer())

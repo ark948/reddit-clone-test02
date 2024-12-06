@@ -32,6 +32,8 @@
         auth commit 02:
             tokens -> AccessTokenBearer
             routes -> user_profile
+        auth commit 03:
+            tokens -> separating access token and refresh token
 
 
 users:
