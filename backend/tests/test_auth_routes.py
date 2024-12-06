@@ -196,3 +196,14 @@ async def test_auth_create_user_account_v3(async_db: AsyncSession, async_client:
     resp = await async_client.post('auth/signup-v3', json=data)
     assert resp.status_code == 201
     assert resp.json() == [1]
+
+
+@pytest.mark.asyncio
+async def test_auth_login(async_client: AsyncClient, sample_user):
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200

@@ -1,6 +1,6 @@
 from typing import Dict, Union, List, Tuple, Annotated
 from sqlmodel.ext.asyncio.session import AsyncSession
-from datetime import timedelta
+from datetime import timedelta, datetime
 from sqlmodel import select, insert
 from fastapi.responses import JSONResponse
 from fastapi import (
@@ -20,7 +20,7 @@ from src.sections.authentication.dependencies import UserServiceDep
 from src.sections.authentication.service import UserService
 from src.sections.database.provider import get_async_session
 from src.sections.authentication.hash import genereate_password_hash
-from src.sections.authentication.tokens import AccessTokenBearer
+from src.sections.authentication.tokens import AccessTokenBearer, RefreshTokenBearer
 from src.sections.authentication.utils import (
     create_access_token, decode_token, verify_password
 )
@@ -36,9 +36,11 @@ router = APIRouter(prefix='/auth', tags=['auth'])
 REFRESH_TOKEN_EXPIRY = 2
 
 
+
 @router.get('/test')
 async def auth_test():
     return {'message': "auth test route successful"}
+
 
 
 # test SKIPPED (fixed) -> test added
@@ -47,6 +49,7 @@ async def auth_test():
 async def get_all_users(session: AsyncSession=Depends(get_async_session)):
     resposne = await crud.get_all_users(session=session)
     return resposne
+
 
 
 # test done
@@ -61,11 +64,13 @@ async def get_all_users_v2(session: AsyncSession=Depends(get_async_session)):
     return users.all()
 
 
+
 # test done
 @router.get('/get-user/{user_id}', response_model=Union[User, None], status_code=status.HTTP_200_OK)
 async def get_user_object(user_id: int, session: AsyncSessionDep):
     response = await crud.get_user(user_id=user_id, session=session)
     return response
+
 
 
 # test done
@@ -75,11 +80,13 @@ async def get_user_object_v2(user_id: int, u: UserServiceDep):
     return response
 
 
+
 # test done
 @router.get('/get-user-v3/{user_id}', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def get_user_object_v3(user_id: int, session: AsyncSession = Depends(get_async_session)):
     response = await crud.get_user_v2(user_id=user_id, session=session)
     return response
+
 
 
 # test done
@@ -92,6 +99,7 @@ async def get_user_object_v4(user_id: int, session: AsyncSession=Depends(get_asy
         print(error)
         return None
     return user
+
 
 
 # test done
@@ -114,6 +122,7 @@ async def create_user_account_v2(user_data: UserCreateModel, u: UserServiceDep):
                         detail="There was a problem, please check your input.")
 
 
+
 # WARNING
 # test done
 @router.post('/signup-v3', response_model=Tuple, status_code=status.HTTP_201_CREATED)
@@ -128,14 +137,27 @@ async def create_user_account_v3(user_data: UserCreateModel, session: AsyncSessi
     return result.inserted_primary_key
 
 
+
 @router.get('/me', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def user_profile(session: AsyncSessionDep, user_data=Depends(AccessTokenBearer())):
     response = await crud.get_user_by_email(email=user_data["user"]["email"], session=session)
     return response
 
 
+
 # auth mechanism
-@router.post('/login')
+@router.post('/refresh-token')
+async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
+    expiry_timestamp = token_details['exp']
+    if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
+        new_access_token = create_access_token(user_data=token_details["user"])
+        return JSONResponse(content={"access_token": new_access_token})
+    return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token.")
+
+
+
+# auth mechanism
+@router.post('/login', status_code=status.HTTP_200_OK)
 async def login_users(login_data: UserLoginModel, session: AsyncSession = Depends(get_async_session)):
     email = login_data.email
     password = login_data.password
