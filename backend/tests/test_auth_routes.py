@@ -11,6 +11,7 @@ from sqlmodel import (
 
 from src.sections.database.models import User
 from src.sections.authentication.hash import genereate_password_hash, verify_password
+from src.sections.authentication.utils import decode_token
 from icecream import ic
 ic.configureOutput(includeContext=True)
 
@@ -207,3 +208,40 @@ async def test_auth_login(async_client: AsyncClient, sample_user):
 
     resp = await async_client.post('auth/login', json=data)
     assert resp.status_code == 200
+    
+    data = resp.json()
+    assert data["message"] == "Login successful"
+    assert data["user"]["email"] == sample_user.email
+    assert data["user"]["uid"] == str(sample_user.uid)
+
+
+
+@pytest.mark.asyncio
+async def test_auth_user_profile_is_inaccissble(async_client: AsyncClient, sample_user):
+    resp = await async_client.get("auth/me")
+
+    assert resp.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_auth_user_profile(async_client: AsyncClient, sample_user):
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200
+
+    login_data = resp.json()
+
+    resp = await async_client.get('auth/me', headers={
+        "Authorization": f"Bearer {login_data['access_token']}"
+    })
+
+    assert resp.status_code == 200
+    data = resp.json()
+
+    assert data["email"] == sample_user.email
+    assert data["username"] == sample_user.username
+    assert data["uid"] == str(sample_user.uid)

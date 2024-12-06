@@ -24,7 +24,7 @@ class TestUserServiceClass:
 
     @pytest.mark.asyncio
     async def test_main_test_post_route(self, async_client: AsyncClient):
-        resp = await async_client.post('/test', json={"text": "hello"})
+        resp = await async_client.post('/test', json={"message": "hello"})
 
         assert resp.status_code == 200
         assert resp.json()['input'] == "hello"
