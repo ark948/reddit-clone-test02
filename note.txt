@@ -13,6 +13,13 @@
     adding alembic and database migration:
     > pip install alembic
     > alembic init -t async <migrationFolderName>
+    1. import models in env.py of alembic folder (all models separatly)
+    2. import SQLModel from sqlmodel
+    3. set sqlalchemy url option config in env.py (use project's Config instance)
+    4. specify target metadata
+    5. import sqlmodel in script.py.mako
+    6. run> alembic revision --autogenerate -m "message"
+    7. apply migration> alembic upgrade head
 4. setting up authentication
     beginning with user model
     to add password hashing, following packages must be isntalled:

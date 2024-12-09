@@ -13,7 +13,7 @@ from src.sections.authentication.routes import router as auth_router
 async def lifespan(app: FastAPI):
     # not needed if alembic was added
     print("\n----> [Server - up] ---->\n")
-    await init_db()
+    # await init_db()
     yield
     print("\n<---- [Server - down] <----\n")
 
