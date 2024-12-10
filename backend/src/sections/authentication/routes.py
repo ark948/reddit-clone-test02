@@ -38,13 +38,15 @@ REFRESH_TOKEN_EXPIRY = 2
 
 
 
+# test done
 @router.get('/test')
 async def auth_test():
     return {'message': "auth test route successful"}
 
 
 
-# test SKIPPED (fixed) -> test added
+# test done
+# test SKIPPED (fixed)
 # test not working (no exec command)
 @router.get('/get-all-users', response_model=List[UserModel], status_code=status.HTTP_200_OK)
 async def get_all_users(session: AsyncSession=Depends(get_async_session)):
@@ -124,8 +126,8 @@ async def create_user_account_v2(user_data: UserCreateModel, u: UserServiceDep):
 
 
 
-# WARNING
 # test done
+# deprecated WARNING
 @router.post('/signup-v3', response_model=Tuple, status_code=status.HTTP_201_CREATED)
 async def create_user_account_v3(user_data: UserCreateModel, session: AsyncSession=Depends(get_async_session)):
     try:
@@ -138,14 +140,14 @@ async def create_user_account_v3(user_data: UserCreateModel, session: AsyncSessi
     return result.inserted_primary_key
 
 
-
+# test done
 @router.get('/me', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def user_profile(session: AsyncSessionDep, user_data=Depends(AccessTokenBearer())):
     response = await crud.get_user_by_email(email=user_data["user"]["email"], session=session)
     return response
 
 
-
+# test done
 # auth mechanism
 @router.post('/refresh-token')
 async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
@@ -157,6 +159,7 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
 
 
 
+# test done
 # auth mechanism
 @router.post('/login', status_code=status.HTTP_200_OK)
 async def login_users(login_data: UserLoginModel, session: AsyncSession = Depends(get_async_session)):

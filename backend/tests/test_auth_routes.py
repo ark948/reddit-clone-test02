@@ -245,3 +245,112 @@ async def test_auth_user_profile(async_client: AsyncClient, sample_user):
     assert data["email"] == sample_user.email
     assert data["username"] == sample_user.username
     assert data["uid"] == str(sample_user.uid)
+
+
+@pytest.mark.asyncio
+async def test_auth_refresh_token_route(async_client: AsyncClient, sample_user):
+    # aquire access and refresh token by logging in
+    # blocklist the access token by logging out
+    # re-aquire a fresh access token by using the refresh-token route
+    # test if the new access token is valid by accessing profile route
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200
+    login_data = resp.json()
+
+    resp = await async_client.post('auth/refresh-token', headers={
+        "Authorization": f"Bearer {login_data['refresh_token']}"
+    })
+
+    new_access_token = resp.json()
+    
+    resp = await async_client.get('auth/me', headers={
+        "Authorization": f"Bearer {new_access_token['access_token']}"
+    })
+    
+    assert resp.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_auth_refresh_token_route_not_access_token(async_client: AsyncClient, sample_user):
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200
+    login_data = resp.json()
+
+    resp = await async_client.post('auth/refresh-token', headers={
+        "Authorization": f"Bearer {login_data['access_token']}"
+    })
+
+    assert resp.status_code == 403
+
+    data = resp.json()
+    assert data["detail"] == "Please provide an refresh token"
+
+@pytest.mark.asyncio
+async def test_auth_refresh_token_route_invalid_token(async_client: AsyncClient, sample_user):
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200
+    login_data = resp.json()
+
+    resp = await async_client.post('auth/refresh-token', headers={
+        "Authorization": f"Bearer {login_data['refresh_token']}a"
+    })
+
+    assert resp.status_code == 403
+    data = resp.json()
+    assert data["detail"] == {"error": "This token is invalid or expired.", "resolution": "Please get new token"}
+
+
+
+@pytest.mark.asyncio
+async def test_auth_logout_route(async_client: AsyncClient, sample_user):
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200
+    login_data = resp.json()
+
+    resp = await async_client.get('auth/logout', headers={
+        "Authorization": f"Bearer {login_data['access_token']}"
+    })
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["message"] == "Logged out successfully."
+
+
+@pytest.mark.asyncio
+async def test_auth_logout_route_refresh_token(async_client: AsyncClient, sample_user):
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200
+    login_data = resp.json()
+
+    resp = await async_client.get('auth/logout', headers={
+        "Authorization": f"Bearer {login_data['refresh_token']}"
+    })
+
+    assert resp.status_code == 403
+    data = resp.json()
+    assert data["detail"] == "Please provide an access token"

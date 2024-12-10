@@ -54,7 +54,7 @@
     > docker run -p 6379:6379 -it redis/redis-stack:latest
     (our first redis setup may be trivial, this will be improved later)
 
-    AUTH (commit 05)
+    AUTH (commit 05) (needs rechecking - blocked tokens should not be valid anymore)
     logout route is now added (token will be added to redis blocklist)
 
 users:
