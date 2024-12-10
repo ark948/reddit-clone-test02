@@ -13,6 +13,7 @@ from fastapi import (
 
 
 # local imports
+from src.sections import redis
 from src.sections.database.models import User
 from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.authentication import crud
@@ -192,3 +193,14 @@ async def login_users(login_data: UserLoginModel, session: AsyncSession = Depend
                 }
             )
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Invalid email or password.")
+
+
+
+@router.get('/logout', status_code=status.HTTP_200_OK)
+async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
+    jti = token_details['jti']
+    await redis.add_jti_to_blocklist(jti)
+    return JSONResponse(
+        content={"message": "Logged out successfully."},
+        status_code=status.HTTP_200_OK
+    )

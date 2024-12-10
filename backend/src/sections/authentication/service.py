@@ -14,17 +14,13 @@ class UserService:
     def __init__(self, session: AsyncSessionDep) -> None:
         self.session = session
 
-
-
     async def get_user(self, user_id: int) -> User | None:
         try:
             user = await self.session.get(User, user_id)
         except Exception as error:
             print(error)
             return None
-        
         return user
-    
 
     async def get_all_users(self) -> List[User] | None:
         try:
@@ -33,7 +29,6 @@ class UserService:
         except Exception as error:
             print(error)
             return None
-        
         return users_list.all()
     
     # auth mechanism
@@ -49,7 +44,6 @@ class UserService:
     async def user_exists(self, email: str) -> bool:
         user = await self.get_user_by_email(email)
         return True if user is not None else False
-
 
     async def create_new_user(self, user_data: UserCreateModel) -> User | None:
         new_user_dict = user_data.model_dump()

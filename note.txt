@@ -44,12 +44,23 @@
         auth commit 04:
             tokens -> TokenBearer updated methods
             routes -> added refresh token route
+5. setting up redis
+    (redis will be used to hold blocklisted tokens)
+    (expired tokens will be added to blocklist upon user logout)
+    (aioredis is deprecated - use redis-py)
+    1. redis docker image needs to be downloaded and ran
+    2. then, initialize a redis client in src/sections/redis.py (pip install redis)
+    use this command to run redis on docker:
+    > docker run -p 6379:6379 -it redis/redis-stack:latest
+    (our first redis setup may be trivial, this will be improved later)
 
+    AUTH (commit 05)
+    logout route is now added (token will be added to redis blocklist)
 
 users:
-    id = 6
-    johndoe1
-    johndoe@gmail.com
+    id = 1
+    johndoe
+    johndoe@email.com
     test123
 
 
