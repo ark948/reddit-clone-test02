@@ -48,6 +48,7 @@ class UserService:
     async def create_new_user(self, user_data: UserCreateModel) -> User | None:
         new_user_dict = user_data.model_dump()
         new_user = User(**new_user_dict)
+        new_user.role = "user"
         new_user.password_hash = genereate_password_hash(new_user_dict['password'])
         try:
             self.session.add(new_user)

@@ -17,7 +17,10 @@ from src.sections import redis
 from src.sections.database.models import User
 from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.authentication import crud
-from src.sections.authentication.dependencies import UserServiceDep
+from src.sections.authentication.dependencies import (
+    get_current_user, UserServiceDep, getCurrentUserDep
+)
+from src.sections.authentication.roles import role_checker, getRoleCheckDep
 from src.sections.authentication.service import UserService
 from src.sections.database.provider import get_async_session
 from src.sections.authentication.hash import genereate_password_hash
@@ -147,6 +150,21 @@ async def user_profile(session: AsyncSessionDep, user_data=Depends(AccessTokenBe
     return response
 
 
+@router.get('/me-v2', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
+async def user_profile_v2(user=Depends(get_current_user), _: bool=Depends(role_checker)):
+    return user
+
+
+@router.get('/me-v3', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
+async def user_profile_v3(user: getCurrentUserDep, _: bool=Depends(role_checker)):
+    return user
+
+
+@router.get('/me-v4', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
+async def user_profile_v4(user: getCurrentUserDep, _: getRoleCheckDep):
+    return user
+
+
 # test done
 # auth mechanism
 @router.post('/refresh-token')
@@ -173,7 +191,8 @@ async def login_users(login_data: UserLoginModel, session: AsyncSession = Depend
             access_token = create_access_token(
                 user_data={
                     "email": user.email,
-                    "user_uid": str(user.uid)
+                    "user_uid": str(user.uid),
+                    "role": user.role
                 }
             )
             refresh_token = create_access_token(

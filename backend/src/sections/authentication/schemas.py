@@ -16,6 +16,7 @@ class UserModel(BaseModel):
     email: str
     first_name: Optional[str]
     last_name: Optional[str]
+    role: Optional[str]
     is_verified: bool
     password_hash: str = Field(exclude=True)
     created_at: datetime

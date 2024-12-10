@@ -57,6 +57,13 @@
     AUTH (commit 05) (needs rechecking - blocked tokens should not be valid anymore)
     logout route is now added (token will be added to redis blocklist)
 
+6. adding role-based access control (RBAC)
+    1. add role field to User model (was already added)
+    2. add get_current_user and RoleChecker class to authentication (new file roles.py)
+    3. crud and service needs to be updated (add role to user creation)
+    4. after creating get_current_user, all routes can be updated (from Depending on tokens to Depending on get_current_user)
+    5. also session is no longer required for these routes (since get_current_user already has it)
+
 users:
     id = 1
     johndoe

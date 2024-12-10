@@ -58,6 +58,7 @@ async def get_user_by_email(email: str, session: AsyncSessionDep) -> User | None
 async def create_user(user_data: UserCreateModel, session: AsyncSessionDep) -> User | None:
     new_user_dict = user_data.model_dump()
     new_user = User(**new_user_dict)
+    new_user.role = "user"
     new_user.password_hash = genereate_password_hash(new_user_dict['password'])
     try:
         session.add(new_user)
