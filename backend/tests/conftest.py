@@ -22,6 +22,7 @@ from src.sections.database.models import User
 from src.sections.authentication.hash import genereate_password_hash
 from src.configs.settings import Config
 
+
 # this engine may not support exec method from sqlmodel session
 async_engine = create_async_engine(url=Config.TEST_DB_URL, echo=False, poolclass=NullPool)
 
@@ -73,5 +74,6 @@ async def multiple_users(async_db: AsyncSession):
     async_db.add(user_obj3)
     await async_db.commit()
     return [user_obj1, user_obj2, user_obj3]
+
 
 # pytest-asyncio provides event loop

@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 # local imports
 from src.sections.database.provider import init_db
 from src.sections.authentication.routes import router as auth_router
+from src.sections.errors import register_all_errors
 
 
 @asynccontextmanager
@@ -19,6 +20,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+register_all_errors(app=app)
 app.include_router(auth_router)
 
 

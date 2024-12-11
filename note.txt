@@ -64,6 +64,18 @@
     4. after creating get_current_user, all routes can be updated (from Depending on tokens to Depending on get_current_user)
     5. also session is no longer required for these routes (since get_current_user already has it)
 
+
+7. adding custom errors (error handling)
+    1. we'll add custom errros to src/sections/errors.py
+    2. then a function that will take a custom exception and allows fastapi to raise it as a response
+    (without it fastapi does not know how to return a custom exception, afterall they are not responses, they are python exceptions)
+    3. after creating exceptions and exception handler, we need to associate our exceptions with fastapi
+    (for that, we'll make another function that will take our app instance, and registers all errors on it)
+    4. we will also add custom error handler for 500 internal server error and for sqlalchemy error
+    5. we must call our error register function in main.py
+    6. finally we need to modify entire project to return our custom errors (in a separate commit)
+
+
 users:
     id = 1
     johndoe

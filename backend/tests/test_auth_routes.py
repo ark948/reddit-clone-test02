@@ -354,3 +354,54 @@ async def test_auth_logout_route_refresh_token(async_client: AsyncClient, sample
     assert resp.status_code == 403
     data = resp.json()
     assert data["detail"] == "Please provide an access token"
+
+
+@pytest.mark.asyncio
+async def test_auth_user_profile_v2(async_client: AsyncClient, sample_user):
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200
+
+    login_data = resp.json()
+
+    resp = await async_client.get('auth/me-v2', headers={
+        "Authorization": f"Bearer {login_data['access_token']}"
+    })
+
+
+@pytest.mark.asyncio
+async def test_auth_user_profile_v3(async_client: AsyncClient, sample_user):
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200
+
+    login_data = resp.json()
+
+    resp = await async_client.get('auth/me-v3', headers={
+        "Authorization": f"Bearer {login_data['access_token']}"
+    })
+
+
+@pytest.mark.asyncio
+async def test_auth_user_profile_v4(async_client: AsyncClient, sample_user):
+    data = {
+        "email": "test01@email.com",
+        "password": "test123"
+    }
+
+    resp = await async_client.post('auth/login', json=data)
+    assert resp.status_code == 200
+
+    login_data = resp.json()
+
+    resp = await async_client.get('auth/me-v4', headers={
+        "Authorization": f"Bearer {login_data['access_token']}"
+    })
