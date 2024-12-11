@@ -23,6 +23,9 @@ from src.sections.authentication.dependencies import (
 from src.sections.authentication.roles import role_checker, getRoleCheckDep
 from src.sections.authentication.service import UserService
 from src.sections.database.provider import get_async_session
+from src.sections.errors import (
+    UserAlreadyExists, InvalidCredentials, InvalidToken
+)
 from src.sections.authentication.hash import genereate_password_hash
 from src.sections.authentication.tokens import AccessTokenBearer, RefreshTokenBearer
 from src.sections.authentication.utils import (
@@ -49,8 +52,6 @@ async def auth_test():
 
 
 # test done
-# test SKIPPED (fixed)
-# test not working (no exec command)
 @router.get('/get-all-users', response_model=List[UserModel], status_code=status.HTTP_200_OK)
 async def get_all_users(session: AsyncSession=Depends(get_async_session)):
     resposne = await crud.get_all_users(session=session)
@@ -143,23 +144,34 @@ async def create_user_account_v3(user_data: UserCreateModel, session: AsyncSessi
     return result.inserted_primary_key
 
 
+@router.post('/signup-v4', response_model=UserModel, status_code=status.HTTP_201_CREATED)
+async def create_user_account_v4(user_data: UserCreateModel, session: AsyncSession=Depends(get_async_session)):
+    user_service = UserService(session=session)
+    email = user_data.email
+    user_exists = await user_service.user_exists(email)
+    if user_exists:
+        raise UserAlreadyExists()
+    new_user = await user_service.create_new_user(user_data)
+    return new_user    
+
+
 # test done
 @router.get('/me', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def user_profile(session: AsyncSessionDep, user_data=Depends(AccessTokenBearer())):
     response = await crud.get_user_by_email(email=user_data["user"]["email"], session=session)
     return response
 
-
+# test done
 @router.get('/me-v2', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def user_profile_v2(user=Depends(get_current_user), _: bool=Depends(role_checker)):
     return user
 
-
+# test done
 @router.get('/me-v3', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def user_profile_v3(user: getCurrentUserDep, _: bool=Depends(role_checker)):
     return user
 
-
+# test done
 @router.get('/me-v4', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def user_profile_v4(user: getCurrentUserDep, _: getRoleCheckDep):
     return user
@@ -173,7 +185,7 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
     if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
         new_access_token = create_access_token(user_data=token_details["user"])
         return JSONResponse(content={"access_token": new_access_token})
-    return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token.")
+    raise InvalidToken()
 
 
 
@@ -214,7 +226,7 @@ async def login_users(login_data: UserLoginModel, session: AsyncSession = Depend
                     }
                 }
             )
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Invalid email or password.")
+    raise InvalidCredentials()
 
 
 

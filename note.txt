@@ -74,6 +74,10 @@
     4. we will also add custom error handler for 500 internal server error and for sqlalchemy error
     5. we must call our error register function in main.py
     6. finally we need to modify entire project to return our custom errors (in a separate commit)
+    list of modules that will have custom errors:
+    auth -> tokens.py
+    auth -> roles.py
+    auth -> routes.py
 
 
 users:

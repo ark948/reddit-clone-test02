@@ -4,6 +4,7 @@ from fastapi import Depends, HTTPException, status
 # local imports
 from src.sections.database.models import User
 from src.sections.authentication.dependencies import get_current_user
+from src.sections.errors import InsufficientPermission
 
 
 class RoleChecker:
@@ -12,11 +13,9 @@ class RoleChecker:
     def __call__(self, current_user: User = Depends(get_current_user)) -> Any:
         if current_user.role in self.allowed_roles:
             return True
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not allowed to perform this action")
+        raise InsufficientPermission()
     
 
 
 role_checker = RoleChecker(["admin", "user"])
-
-
 getRoleCheckDep = Annotated[bool, Depends(role_checker)]
