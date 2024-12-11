@@ -1,5 +1,6 @@
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
+from itsdangerous import URLSafeTimedSerializer
 
 
 from src.configs.settings import Config
@@ -46,3 +47,18 @@ def decode_token(token: str) -> dict:
     except jwt.PyJWTError as e:
         logging.exception(e)
         return None
+    
+
+serializer = URLSafeTimedSerializer(secret_key=Config.JWT_SECRET, salt="email-configuration")
+
+def create_url_safe_token(data: dict):
+    token = serializer.dumps(data)
+    return token
+
+
+def decode_url_safe_token(token: str):
+    try:
+        token_data = serializer.loads(token)
+        return token_data
+    except Exception as e:
+        logging.error(str(e))

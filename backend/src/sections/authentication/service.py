@@ -58,3 +58,13 @@ class UserService:
             print(error)
             return None
         return new_user
+    
+    async def update_user(self, user: User, user_data: dict) -> Union[User, None]:
+        for k, v in user_data.items():
+            setattr(user, k, v)
+        try:
+            await self.session.commit()
+            return user
+        except (IntegrityError, Exception) as error:
+            print(error)
+            return None

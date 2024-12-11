@@ -79,6 +79,20 @@
     auth -> roles.py
     auth -> routes.py
 
+8. adding middlewares
+    (this is not a required step, only use custom middlewares if actually needed)
+    e.g. CORSMiddleware is required to setup a simple mail fucntionality
+    (we may install fastapi-mail aswell)
+    
+9. adding email verification
+    1. pip install itsdangerous
+    2. begin by creating a way to safely pass tokens to unsafe environments, such as user's email address (in auth > utils.py)
+    (many mail stuff are skipped)
+    3. update user method was added to auth service.py
+    4. an schema is also needed
+    the email containing the verification link will be sent to user upon succeessful registration
+    5. so, edit the signup route
+
 
 users:
     id = 1

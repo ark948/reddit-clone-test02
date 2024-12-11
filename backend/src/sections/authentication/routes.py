@@ -14,27 +14,30 @@ from fastapi import (
 
 # local imports
 from src.sections import redis
+from src.configs.settings import Config
 from src.sections.database.models import User
 from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.authentication import crud
-from src.sections.authentication.dependencies import (
-    get_current_user, UserServiceDep, getCurrentUserDep
-)
+from src.sections.mail import create_message, mail
 from src.sections.authentication.roles import role_checker, getRoleCheckDep
 from src.sections.authentication.service import UserService
 from src.sections.database.provider import get_async_session
-from src.sections.errors import (
-    UserAlreadyExists, InvalidCredentials, InvalidToken
-)
 from src.sections.authentication.hash import genereate_password_hash
 from src.sections.authentication.tokens import AccessTokenBearer, RefreshTokenBearer
+from src.sections.authentication.dependencies import (
+    get_current_user, UserServiceDep, getCurrentUserDep
+)
+from src.sections.errors import (
+    UserAlreadyExists, InvalidCredentials, InvalidToken, UserNotFound
+)
 from src.sections.authentication.utils import (
-    create_access_token, decode_token, verify_password
+    create_access_token, decode_token, verify_password, create_url_safe_token, decode_url_safe_token
 )
 from src.sections.authentication.schemas import (
     UserCreateModel,
     UserModel,
-    UserLoginModel
+    UserLoginModel,
+    EmailModel
 )
 
 
@@ -49,6 +52,20 @@ REFRESH_TOKEN_EXPIRY = 2
 async def auth_test():
     return {'message': "auth test route successful"}
 
+
+@router.post('/send-mail')
+async def send_mail(emails: EmailModel):
+    emails = emails.addresses
+    html = "<h1>Welcome to our app.</h1>"
+    message = create_message(
+        recipient=emails,
+        subject="Welcome",
+        body=html
+    )
+    await mail.send_message(message)
+    return {
+        "message": "Email sent successfully"
+    }
 
 
 # test done
@@ -144,7 +161,7 @@ async def create_user_account_v3(user_data: UserCreateModel, session: AsyncSessi
     return result.inserted_primary_key
 
 
-@router.post('/signup-v4', response_model=UserModel, status_code=status.HTTP_201_CREATED)
+@router.post('/signup-v4', response_model=Dict, status_code=status.HTTP_201_CREATED)
 async def create_user_account_v4(user_data: UserCreateModel, session: AsyncSession=Depends(get_async_session)):
     user_service = UserService(session=session)
     email = user_data.email
@@ -152,7 +169,43 @@ async def create_user_account_v4(user_data: UserCreateModel, session: AsyncSessi
     if user_exists:
         raise UserAlreadyExists()
     new_user = await user_service.create_new_user(user_data)
-    return new_user    
+    token = create_url_safe_token({"email": email})
+    link = f"http://{Config.DOMAIN}/auth/verify/{token}"
+    html_message = f"""
+        <h1>Verify your email</h1>
+        <p>Please click on this <a href="{link}">link</a> to verify your email</p>
+        """
+    message = create_message(
+        recipient=[email],
+        subject="Verify your email",
+        body=html_message
+    )
+
+    await mail.send_message(message)
+    return {
+        "message": "Account created. Check your email to verify your account.",
+        "user": new_user
+    }
+
+
+@router.get('/verify/{token}')
+async def verify_user_account(token: str, session: AsyncSession = Depends(get_async_session)):
+    token_data = decode_url_safe_token(token)
+    user_service = UserService(session=session)
+    user_email = token_data.get('email')
+    if user_email:
+        user = await user_service.get_user_by_email(user_email)
+        if not user:
+            raise UserNotFound()
+        await user_service.update_user(user, {'is_verified': True})
+        return JSONResponse(content={
+                "message": "User account successfully verified"
+            }, status_code=status.HTTP_200_OK
+        )
+    return JSONResponse(content={
+            "message": "Error occurred during verification"
+        }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
 
 
 # test done
