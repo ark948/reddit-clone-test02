@@ -93,6 +93,11 @@
     the email containing the verification link will be sent to user upon succeessful registration
     5. so, edit the signup route
 
+10. adding password reset feature
+    (there is an update to role checker - we'll check if user is verified or not)
+    1. we'll need 2 schemas, 1 to send email to request password recovery link (this could also just use Body parameter)
+    the other to send new password and confirm password
+
 
 users:
     id = 1

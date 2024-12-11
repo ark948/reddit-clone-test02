@@ -239,8 +239,59 @@ async def user_profile_v4(user: getCurrentUserDep, _: getRoleCheckDep):
     return user
 
 
+@router.post('/password-reset-request', status_code=status.HTTP_200_OK)
+async def password_reset_request(email_data: PasswordResetRequestModel):
+    email = email_data.email
+    token = create_url_safe_token({"email": email})
+    link = f"http://{Config.DOMAIN}/auth/password-reset-confirm/{token}"
+    html_message = f"""
+        <h1>Reset your password</h1>
+        <p>Please click on this <a href="{link}">link</a> to reset your password</p>
+    """
+    try:
+        message = create_message(
+                recipient=[email],
+                subject="Reset your password",
+                body=html_message
+            )
+    except Exception as error:
+        pass
+
+    print("\n\n", link, "\n\n")
+
+    try:
+        await mail.send_message(message)
+    except Exception as error:
+        pass
+    return JSONResponse(
+        content={"message": "Please check your email."},
+        status_code=status.HTTP_200_OK
+    )
+
+
+@router.post('/password-reset-confirm/{token}')
+async def reset_account_password(token: str, passwords: PasswordResetConfirmModel, session: AsyncSession = Depends(get_async_session)):
+    new_password = passwords.new_password
+    confirm_password = passwords.confirm_password
+    user_service = UserService(session=session)
+    if new_password != confirm_password:
+        raise HTTPException(detail="Passwords do not match.", status_code=status.HTTP_400_BAD_REQUEST)
+    token_data = decode_url_safe_token(token)
+    user_email = token_data.get('email')
+    if user_email:
+        user = await user_service.get_user_by_email(user_email)
+        if not user:
+            raise UserNotFound()
+        password_hash = generate_password_hash(new_password)
+        await user_service.update_user(user, {'password_hash': password_hash})
+        return JSONResponse(content={"message": "Password reset successful"}, status_code=status.HTTP_200_OK)
+    return JSONResponse(content={
+            "message": "Error occurred during password reset"
+        }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
+
+
 # test done
-# auth mechanism
 @router.post('/refresh-token')
 async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
     expiry_timestamp = token_details['exp']
@@ -252,7 +303,6 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
 
 
 # test done
-# auth mechanism
 @router.post('/login', status_code=status.HTTP_200_OK)
 async def login_users(login_data: UserLoginModel, session: AsyncSession = Depends(get_async_session)):
     email = login_data.email
