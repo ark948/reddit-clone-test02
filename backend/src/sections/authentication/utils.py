@@ -15,7 +15,7 @@ import logging
 passwd_context = CryptContext(schemes=['bcrypt'])
 ACCESS_TOKEN_EXPIRY = 3600
 
-def genereate_password_hash(password: str) -> str:
+def generate_password_hash(password: str) -> str:
     hash = passwd_context.hash(password)
     return hash
 

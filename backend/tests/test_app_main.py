@@ -10,7 +10,7 @@ from sqlmodel import (
 
 
 from src.sections.database.models import User
-from src.sections.authentication.hash import genereate_password_hash, verify_password
+from src.sections.authentication.hash import generate_password_hash, verify_password
 from icecream import ic
 ic.configureOutput(includeContext=True)
 
@@ -34,7 +34,7 @@ async def test_auth_test_route(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_create_and_get_user(async_db: AsyncSession, async_client: AsyncClient):
-    new_user = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
+    new_user = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
     async_db.add(new_user)
     await async_db.commit()
 
@@ -46,7 +46,7 @@ async def test_create_and_get_user(async_db: AsyncSession, async_client: AsyncCl
     assert data['email'] == "tester01@email.com"
 
 
-    second_user = User(username="tester02", email="tester02@email.com", password_hash=genereate_password_hash('123'))
+    second_user = User(username="tester02", email="tester02@email.com", password_hash=generate_password_hash('123'))
     async_db.add(second_user)
     await async_db.commit()
 
@@ -60,7 +60,7 @@ async def test_create_and_get_user(async_db: AsyncSession, async_client: AsyncCl
 
 @pytest.mark.asyncio
 async def test_get_user_from_session(async_db: AsyncSession):
-    user = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
+    user = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
     async_db.add(user)
     await async_db.commit()
 
@@ -74,8 +74,8 @@ async def test_get_user_from_session(async_db: AsyncSession):
 
 @pytest.mark.asyncio
 async def test_get_all_users(async_db: AsyncSession, async_client: AsyncClient):
-    user1 = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
-    user2 = User(username="tester02", email="tester02@email.com", password_hash=genereate_password_hash('123'))
+    user1 = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
+    user2 = User(username="tester02", email="tester02@email.com", password_hash=generate_password_hash('123'))
     async_db.add(user1)
     async_db.add(user2)
     await async_db.commit()
@@ -96,7 +96,7 @@ async def test_get_all_users(async_db: AsyncSession, async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_user_is_correct_isntance(async_db: AsyncSession, async_client: AsyncClient):
-    user1 = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
+    user1 = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
     async_db.add(user1)
     await async_db.commit()
 
@@ -111,7 +111,7 @@ async def test_user_is_correct_isntance(async_db: AsyncSession, async_client: As
 
 @pytest.mark.asyncio
 async def test_auth_hashing(async_db: AsyncSession, async_client: AsyncClient):
-    user1 = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
+    user1 = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
     async_db.add(user1)
     await async_db.commit()
 

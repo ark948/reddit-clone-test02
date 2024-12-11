@@ -19,7 +19,7 @@ import pytest_asyncio
 from src import app
 from src.sections.database.dependencies import get_async_session
 from src.sections.database.models import User
-from src.sections.authentication.hash import genereate_password_hash
+from src.sections.authentication.hash import generate_password_hash
 from src.configs.settings import Config
 
 
@@ -58,7 +58,7 @@ async def async_client(async_db):
 
 @pytest_asyncio.fixture(scope="function")
 async def sample_user(async_db: AsyncSession):
-    user_obj = User(username="test01", email="test01@email.com", password_hash=genereate_password_hash('test123'))
+    user_obj = User(username="test01", email="test01@email.com", password_hash=generate_password_hash('test123'))
     async_db.add(user_obj)
     await async_db.commit()
     return user_obj
@@ -66,9 +66,9 @@ async def sample_user(async_db: AsyncSession):
 
 @pytest_asyncio.fixture(scope="function")
 async def multiple_users(async_db: AsyncSession):
-    user_obj1 = User(username="test01", email="test01@email.com", password_hash=genereate_password_hash('test123'))
-    user_obj2 = User(username="test02", email="test02@email.com", password_hash=genereate_password_hash('test123'))
-    user_obj3 = User(username="test03", email="test03@email.com", password_hash=genereate_password_hash('test123'))
+    user_obj1 = User(username="test01", email="test01@email.com", password_hash=generate_password_hash('test123'))
+    user_obj2 = User(username="test02", email="test02@email.com", password_hash=generate_password_hash('test123'))
+    user_obj3 = User(username="test03", email="test03@email.com", password_hash=generate_password_hash('test123'))
     async_db.add(user_obj1)
     async_db.add(user_obj2)
     async_db.add(user_obj3)

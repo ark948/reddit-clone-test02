@@ -4,7 +4,7 @@ from icecream import ic
 
 
 from src.sections.authentication.utils import (
-    genereate_password_hash,
+    generate_password_hash,
     verify_password,
     create_access_token,
     decode_token
@@ -16,7 +16,7 @@ from src.sections.authentication.utils import (
 @pytest.mark.asyncio
 async def test_generate_password_hash():
     plain_password = 'test123'
-    password_hash = genereate_password_hash(plain_password)
+    password_hash = generate_password_hash(plain_password)
 
     assert password_hash != plain_password
 
@@ -24,7 +24,7 @@ async def test_generate_password_hash():
 @pytest.mark.asyncio
 async def test_verify_password():
     plain_password = 'test123'
-    password_hash = genereate_password_hash(plain_password)
+    password_hash = generate_password_hash(plain_password)
 
     assert verify_password(plain_password, password_hash) == True
 

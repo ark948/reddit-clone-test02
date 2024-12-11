@@ -10,7 +10,7 @@ from sqlmodel import (
 
 
 from src.sections.database.models import User
-from src.sections.authentication.hash import genereate_password_hash, verify_password
+from src.sections.authentication.hash import generate_password_hash, verify_password
 from src.sections.authentication.utils import decode_token
 from icecream import ic
 ic.configureOutput(includeContext=True)
@@ -53,7 +53,7 @@ async def test_auth_get_all_users_v2_with_no_data(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_auth_get_all_users_v2_with_data(async_db: AsyncSession, async_client: AsyncClient):
-    new_user = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
+    new_user = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
     async_db.add(new_user)
     await async_db.commit()
 
@@ -67,7 +67,7 @@ async def test_auth_get_all_users_v2_with_data(async_db: AsyncSession, async_cli
 
 @pytest.mark.asyncio
 async def test_auth_get_user_object(async_db: AsyncSession, async_client: AsyncClient):
-    new_user = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
+    new_user = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
     async_db.add(new_user)
     await async_db.commit()
 
@@ -91,7 +91,7 @@ async def test_auth_get_user_object_no_data(async_db: AsyncSession, async_client
 
 @pytest.mark.asyncio
 async def test_auth_get_user_object_v2(async_db: AsyncSession, async_client: AsyncClient):
-    new_user = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
+    new_user = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
     async_db.add(new_user)
     await async_db.commit()
 
@@ -113,7 +113,7 @@ async def test_auth_get_user_object_v2_no_data(async_db: AsyncSession, async_cli
 
 @pytest.mark.asyncio
 async def test_auth_get_user_object_v3(async_db: AsyncSession, async_client: AsyncClient):
-    new_user = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
+    new_user = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
     async_db.add(new_user)
     await async_db.commit()
 
@@ -135,7 +135,7 @@ async def test_auth_get_user_object_v3_no_data(async_db: AsyncSession, async_cli
 
 @pytest.mark.asyncio
 async def test_auth_get_user_object_v4(async_db: AsyncSession, async_client: AsyncClient):
-    new_user = User(username="tester01", email="tester01@email.com", password_hash=genereate_password_hash('123'))
+    new_user = User(username="tester01", email="tester01@email.com", password_hash=generate_password_hash('123'))
     async_db.add(new_user)
     await async_db.commit()
 
@@ -293,7 +293,9 @@ async def test_auth_refresh_token_route_not_access_token(async_client: AsyncClie
     assert resp.status_code == 403
 
     data = resp.json()
-    assert data["detail"] == "Please provide an refresh token"
+    assert data["error_code"] == 'refresh_token_required'
+    assert data["message"] == "Please provide a valid refresh token"
+    assert data["resolution"] == "Please get an refresh token"
 
 @pytest.mark.asyncio
 async def test_auth_refresh_token_route_invalid_token(async_client: AsyncClient, sample_user):
@@ -310,9 +312,11 @@ async def test_auth_refresh_token_route_invalid_token(async_client: AsyncClient,
         "Authorization": f"Bearer {login_data['refresh_token']}a"
     })
 
-    assert resp.status_code == 403
+    assert resp.status_code == 401
     data = resp.json()
-    assert data["detail"] == {"error": "This token is invalid or expired.", "resolution": "Please get new token"}
+    assert data["error_code"] == 'invalid_token'
+    assert data["message"] == "Token is invalid Or expired"
+    assert data["resolution"] == "Please get new token"
 
 
 
@@ -351,9 +355,11 @@ async def test_auth_logout_route_refresh_token(async_client: AsyncClient, sample
         "Authorization": f"Bearer {login_data['refresh_token']}"
     })
 
-    assert resp.status_code == 403
+    assert resp.status_code == 401
     data = resp.json()
-    assert data["detail"] == "Please provide an access token"
+    assert data["message"] == "Please provide a valid access token"
+    assert data["resolution"] == "Please get an access token"
+    assert data["error_code"] == "access_token_required"
 
 
 @pytest.mark.asyncio

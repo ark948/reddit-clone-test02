@@ -7,7 +7,7 @@ pwdContext = CryptContext(
 )
 
 
-def genereate_password_hash(password: str) -> str:
+def generate_password_hash(password: str) -> str:
     hash = pwdContext.hash(password)
     return hash
 

@@ -22,7 +22,7 @@ from src.sections.mail import create_message, mail
 from src.sections.authentication.roles import role_checker, getRoleCheckDep
 from src.sections.authentication.service import UserService
 from src.sections.database.provider import get_async_session
-from src.sections.authentication.hash import genereate_password_hash
+from src.sections.authentication.hash import generate_password_hash
 from src.sections.authentication.tokens import AccessTokenBearer, RefreshTokenBearer
 from src.sections.authentication.dependencies import (
     get_current_user, UserServiceDep, getCurrentUserDep
@@ -37,7 +37,9 @@ from src.sections.authentication.schemas import (
     UserCreateModel,
     UserModel,
     UserLoginModel,
-    EmailModel
+    EmailModel,
+    PasswordResetRequestModel,
+    PasswordResetConfirmModel
 )
 
 
@@ -152,7 +154,7 @@ async def create_user_account_v2(user_data: UserCreateModel, u: UserServiceDep):
 @router.post('/signup-v3', response_model=Tuple, status_code=status.HTTP_201_CREATED)
 async def create_user_account_v3(user_data: UserCreateModel, session: AsyncSession=Depends(get_async_session)):
     try:
-        stmt = insert(User).values(username=user_data.username, email=user_data.email, password_hash=genereate_password_hash(user_data.password))
+        stmt = insert(User).values(username=user_data.username, email=user_data.email, password_hash=generate_password_hash(user_data.password))
         result = await session.execute(stmt)
         await session.commit()
     except Exception as error:
