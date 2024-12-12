@@ -1,4 +1,6 @@
 from passlib.context import CryptContext
+from passlib.hash import bcrypt
+from passlib.exc import UnknownHashError
 
 
 
@@ -13,4 +15,7 @@ def generate_password_hash(password: str) -> str:
 
 
 def verify_password(password: str, hash: str) -> bool:
-    return pwdContext.verify(password, hash)
+    try:
+        pwdContext.verify(password, hash)
+    except UnknownHashError:
+        return bcrypt.verify(password, hash)

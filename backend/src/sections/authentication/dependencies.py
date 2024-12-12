@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 # local imports
 from src.sections.authentication.service import UserService
 from src.sections.database.models import User
-from src.sections.database.provider import get_async_session
+from src.sections.database.connection import get_async_session
 from src.sections.authentication.crud import (
     get_user_by_email
 )

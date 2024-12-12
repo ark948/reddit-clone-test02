@@ -24,20 +24,3 @@ async def init_db():
         statement = text("SELECT 'database connected';")
         result = await conn.execute(statement)
         print(result.all())
-
-
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    Session = sessionmaker(
-        bind=async_engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
-
-    async with Session() as session:
-        try:
-            yield session
-        except:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()

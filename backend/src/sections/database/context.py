@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy.exc import IntegrityError
 
 
-from src.sections.database.provider import get_async_session
+from src.sections.database.connection import get_async_session
 from src.sections.authentication.schemas import UserCreateModel
 from src.sections.errors import UserAlreadyExists
 from src.sections.database.models import User

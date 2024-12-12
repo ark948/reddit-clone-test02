@@ -114,6 +114,7 @@
 
 12. Changing hashing algorithm from bcrypt to something else
     (bcrypt throws a warning and it's going on my nerves)
+    this caused an error while trying to verify older users with password hashes with bcrypt.
 
 
 

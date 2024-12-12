@@ -20,7 +20,7 @@ from src.sections.authentication import crud
 from src.sections.mail import create_message, mail
 from src.sections.authentication.roles import role_checker, getRoleCheckDep
 from src.sections.authentication.service import UserService
-from src.sections.database.provider import get_async_session
+from src.sections.database.connection import get_async_session
 from src.sections.authentication.hash import generate_password_hash, verify_password
 from src.sections.authentication.tokens import AccessTokenBearer, RefreshTokenBearer
 from src.sections.tasks import actions as celery_actions
