@@ -108,8 +108,12 @@
     3. celery needs redis url to work with redis, so update config accordingly
     (adding redis_url we will need to delete redis host and port, and use this instead for redis)
     4. to run celery server:
-    > >celery -A src.sections.tasks worker --loglevel=INFO --pool=solo
+    > celery -A src.sections.tasks worker --loglevel=INFO --pool=solo
     to check if celery works, run redis, start a shell, import test task and run it
+
+
+12. Changing hashing algorithm from bcrypt to something else
+    (bcrypt throws a warning and it's going on my nerves)
 
 
 
