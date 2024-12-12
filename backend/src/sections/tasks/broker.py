@@ -1,6 +1,6 @@
 from src.configs.settings import Config
 
-
+# this file is unused for now
 
 broker_url = Config.REDIS_URL
 result_backend = Config.REDIS_URL
