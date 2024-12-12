@@ -3,7 +3,6 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from fastapi.encoders import jsonable_encoder
 from sqlmodel import (
     select
 )

@@ -1,4 +1,4 @@
-from typing import Dict, Union, List, Tuple, Annotated
+from typing import Dict, Union, List, Tuple
 from sqlmodel.ext.asyncio.session import AsyncSession
 from datetime import timedelta, datetime
 from sqlmodel import select, insert
@@ -8,7 +8,6 @@ from fastapi import (
     Depends,
     HTTPException,
     status,
-    Body
 )
 
 
@@ -22,7 +21,7 @@ from src.sections.mail import create_message, mail
 from src.sections.authentication.roles import role_checker, getRoleCheckDep
 from src.sections.authentication.service import UserService
 from src.sections.database.provider import get_async_session
-from src.sections.authentication.hash import generate_password_hash
+from src.sections.authentication.hash import generate_password_hash, verify_password
 from src.sections.authentication.tokens import AccessTokenBearer, RefreshTokenBearer
 from src.sections.authentication.dependencies import (
     get_current_user, UserServiceDep, getCurrentUserDep
@@ -31,7 +30,7 @@ from src.sections.errors import (
     UserAlreadyExists, InvalidCredentials, InvalidToken, UserNotFound
 )
 from src.sections.authentication.utils import (
-    create_access_token, decode_token, verify_password, create_url_safe_token, decode_url_safe_token
+    create_access_token, create_url_safe_token, decode_url_safe_token
 )
 from src.sections.authentication.schemas import (
     UserCreateModel,

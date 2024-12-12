@@ -1,5 +1,5 @@
 from fastapi.security import HTTPBearer
-from fastapi import Request, HTTPException
+from fastapi import Request
 from fastapi.security.http import HTTPAuthorizationCredentials
 
 

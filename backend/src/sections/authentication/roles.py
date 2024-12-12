@@ -1,5 +1,5 @@
 from typing import List, Any, Annotated
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 
 # local imports
 from src.sections.database.models import User

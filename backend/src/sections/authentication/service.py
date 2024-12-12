@@ -1,6 +1,6 @@
 from sqlmodel import select
 from sqlalchemy.exc import IntegrityError
-from typing import Dict, List, Union
+from typing import List, Union
 
 # local imports
 from src.sections.database.dependencies import AsyncSessionDep

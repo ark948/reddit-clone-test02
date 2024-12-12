@@ -1,4 +1,3 @@
-import json
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
@@ -10,8 +9,7 @@ from sqlmodel import (
 
 
 from src.sections.database.models import User
-from src.sections.authentication.hash import generate_password_hash, verify_password
-from src.sections.authentication.utils import decode_token
+from src.sections.authentication.hash import generate_password_hash
 from icecream import ic
 ic.configureOutput(includeContext=True)
 

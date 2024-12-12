@@ -103,7 +103,7 @@ users:
     id = 1
     johndoe
     johndoe@email.com
-    test123
+    hello123 or test123
 
 
 

@@ -3,9 +3,8 @@ from httpx import AsyncClient
 from icecream import ic
 
 
+from src.sections.authentication.hash import generate_password_hash, verify_password
 from src.sections.authentication.utils import (
-    generate_password_hash,
-    verify_password,
     create_access_token,
     decode_token
 )

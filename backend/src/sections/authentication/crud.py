@@ -1,9 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from typing import Dict
 from sqlmodel import (
-    select,
-    insert
+    select
 )
 
 
@@ -70,3 +68,13 @@ async def create_user(user_data: UserCreateModel, session: AsyncSessionDep) -> U
         return None
     
     return new_user
+
+async def update_user(user: User, user_data: dict, session: AsyncSession) -> User | None:
+        for k, v in user_data.items():
+            setattr(user, k, v)
+        try:
+            await session.commit()
+            return user
+        except (IntegrityError, Exception) as error:
+            print(error)
+            return None
