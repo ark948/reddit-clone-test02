@@ -23,6 +23,7 @@ from src.sections.authentication.service import UserService
 from src.sections.database.provider import get_async_session
 from src.sections.authentication.hash import generate_password_hash, verify_password
 from src.sections.authentication.tokens import AccessTokenBearer, RefreshTokenBearer
+from src.sections.tasks import actions as celery_actions
 from src.sections.authentication.dependencies import (
     get_current_user, UserServiceDep, getCurrentUserDep
 )
@@ -58,12 +59,7 @@ async def auth_test():
 async def send_mail(emails: EmailModel):
     emails = emails.addresses
     html = "<h1>Welcome to our app.</h1>"
-    message = create_message(
-        recipient=emails,
-        subject="Welcome",
-        body=html
-    )
-    await mail.send_message(message)
+    celery_actions.send_email(recipient=emails, subject="Welcome", body=html)
     return {
         "message": "Email sent successfully"
     }
@@ -176,18 +172,8 @@ async def create_user_account_v4(user_data: UserCreateModel, session: AsyncSessi
         <h1>Verify your email</h1>
         <p>Please click on this <a href="{link}">link</a> to verify your email</p>
         """
-    try:
-        message = create_message(
-            recipient=[email],
-            subject="Verify your email",
-            body=html_message
-        )
-    except Exception as error:
-        pass
-    try:
-        await mail.send_message(message)
-    except Exception as error:
-        pass
+    emails = [email]
+    celery_actions.send_email(recipient=emails, subject="Verify email", body=html_message)
     print("\n\n", link, "\n\n")
     return {
         "message": "Account created. Check your email to verify your account.",

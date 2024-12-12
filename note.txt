@@ -98,6 +98,21 @@
     1. we'll need 2 schemas, 1 to send email to request password recovery link (this could also just use Body parameter)
     the other to send new password and confirm password
 
+11. setting up celery for background tasks
+    (the first version will be trivial, then we'll move onto a more improved setup)
+    1. pip install celery
+    (notes: celery tasks are not async)
+    (but since our code is async, we'll use asgiref to covert async code to sync)
+    2. pip install asgiref
+    (celery needs a message broker/task queue, this can be redis, rabbitmq, or amazon sqs)
+    3. celery needs redis url to work with redis, so update config accordingly
+    (adding redis_url we will need to delete redis host and port, and use this instead for redis)
+    4. to run celery server:
+    > >celery -A src.sections.tasks worker --loglevel=INFO --pool=solo
+    to check if celery works, run redis, start a shell, import test task and run it
+
+
+
 
 users:
     id = 1
