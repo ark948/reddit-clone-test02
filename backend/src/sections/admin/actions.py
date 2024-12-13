@@ -10,3 +10,21 @@
 
 # view all active tokens
 # modify all active tokens
+
+from sqlalchemy.ext.asyncio.session import AsyncSession
+from sqlmodel import select
+
+from src.sections.database.connection import get_async_session
+from src.sections.database.models import User
+
+
+async def get_users_list(session: AsyncSession, order_by: str):
+    stmt = select(User).filter_by(f"{order_by}")
+    try:
+        result = await session.scalars(stmt)
+        return result.all()
+    except Exception as error:
+        return {
+            "status": "ERROR",
+            "detail": str(error)
+        }
