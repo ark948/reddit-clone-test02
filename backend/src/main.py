@@ -9,6 +9,7 @@ from src.sections.database.provider import init_db
 from src.sections.authentication.routes import router as auth_router
 from src.sections.errors import register_all_errors
 from src.sections.middlewares.cors import register_cors_middleware
+from src.apps.endpoints import apps_router
 
 
 @asynccontextmanager
@@ -24,6 +25,7 @@ app = FastAPI(lifespan=lifespan)
 register_all_errors(app=app)
 register_cors_middleware(app=app)
 app.include_router(auth_router)
+app.include_router(apps_router)
 
 
 @app.get('/test')

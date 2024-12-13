@@ -1,10 +1,11 @@
 from sqlmodel import select
 from sqlalchemy.exc import IntegrityError
-from typing import List, Union
+from typing import List, Union, Dict
 
 # local imports
 from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.database.models import User
+from src.sections.database.models import Profile
 from src.sections.authentication.schemas import UserCreateModel
 from src.sections.authentication.hash import generate_password_hash
 
@@ -45,7 +46,7 @@ class UserService:
         user = await self.get_user_by_email(email)
         return True if user is not None else False
 
-    async def create_new_user(self, user_data: UserCreateModel) -> User | None:
+    async def create_new_user(self, user_data: UserCreateModel) -> Dict:
         new_user_dict = user_data.model_dump()
         new_user = User(**new_user_dict)
         new_user.role = "user"
@@ -57,7 +58,24 @@ class UserService:
         except (IntegrityError, Exception) as error:
             print(error)
             return None
-        return new_user
+        
+        new_profile = Profile(user_id=new_user.id)
+        try:
+            self.session.add(new_profile)
+            await self.session.commit()
+        except Exception as error:
+            print("\nERROR in creating profile\n", error)
+        
+        try:
+            new_user.profile_id = new_profile.id
+            await self.session.commit()
+        except Exception as error:
+            print("\nERROR in attaching profile to user\n", error)
+
+        return {
+            "user": new_user,
+            "profile": new_profile
+        }
     
     async def update_user(self, user: User, user_data: dict) -> Union[User, None]:
         for k, v in user_data.items():

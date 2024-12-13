@@ -117,6 +117,10 @@
     this caused an error while trying to verify older users with password hashes with bcrypt.
 
 
+13. Adding rest of the models
+    since User model is completed, we should add the rest of the models
+    NOTE: alembic downgrade will fail with Drop constraint functions (they need a name and autogenerate will not provide one)
+    (to get the name of constraints, run describe table in psql)
 
 
 users:
@@ -140,3 +144,6 @@ pytest, httpx
 
 running async tests with pytest: sometimes runs them with more than one backend, this is why the number of tests are weird.
 (run with pytest -v)
+
+docker run -p 6379:6379 -it redis/redis-stack:latest
+celery -A src.sections.tasks worker --loglevel=INFO --pool=solo
