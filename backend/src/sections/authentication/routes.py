@@ -10,9 +10,13 @@ from fastapi import (
     status,
 )
 
+from icecream import ic
+ic.configureOutput(includeContext=True)
+
 
 # local imports
 from src.sections import redis
+from src.sections.redis import getRedisDep
 from src.configs.settings import Config
 from src.sections.database.models import User
 from src.sections.database.dependencies import AsyncSessionDep
@@ -334,5 +338,18 @@ async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
     await redis.add_jti_to_blocklist(jti)
     return JSONResponse(
         content={"message": "Logged out successfully."},
+        status_code=status.HTTP_200_OK
+    )
+
+
+@router.get('/logout-v2', status_code=status.HTTP_200_OK)
+async def revoke_token_v2(r: getRedisDep, token_details: dict = Depends(AccessTokenBearer())):
+    jti = token_details['jti']
+    try:
+        await r.set(name=jti, value="", ex=3600)
+    except Exception as error:
+        print("ERROR in logout-v2", error)
+    return JSONResponse(
+        content={"message": "Logged out successfully (V2)."},
         status_code=status.HTTP_200_OK
     )

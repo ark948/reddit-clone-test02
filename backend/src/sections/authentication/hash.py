@@ -1,7 +1,6 @@
 from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
-
-
+import logging
 
 pwdContext = CryptContext(
     schemes=['pbkdf2_sha256', 'bcrypt']
@@ -15,4 +14,3 @@ def generate_password_hash(password: str) -> str:
 
 def verify_password(password: str, hash: str) -> bool:
     return pwdContext.verify(password, hash)
-    

@@ -1,4 +1,7 @@
+from typing import Annotated
+from fastapi import Depends
 from redis import Redis
+from redis import asyncio as async_redis
 from src.configs.settings import Config
 
 
@@ -6,16 +9,31 @@ from src.configs.settings import Config
 JTI_EXPIRY = 3600
 
 
-redis_client = Redis.from_url(Config.REDIS_URL)
+# redis_client = Redis.from_url(Config.REDIS_URL)
+redis_client = async_redis.Redis.from_url(Config.REDIS_URL)
 
 
 async def add_jti_to_blocklist(jti: str) -> None:
     print("REDIS TASK STARTED (adding token to blocklist)...")
-    redis_client.set(name=jti, value="", ex=JTI_EXPIRY)
+    try:
+        await redis_client.set(name=jti, value="", ex=JTI_EXPIRY)
+    except Exception as error:
+        print("\nERROR Redis add jti\n", error)
     print("REDIS TASK FINISHED.")
 
 
 async def token_in_blocklist(jti: str) -> bool:
-    jti = redis_client.get(jti)
+    try:
+        jti = await redis_client.get(jti)
+    except Exception as error:
+        print("\nERROR Redis blocklist\n", error)
     print("REDIS TASK (Token check)")
     return jti is not None
+
+
+async def get_redis():
+    async with redis_client as r:
+        yield r
+
+
+getRedisDep = Annotated[Redis, Depends(get_redis)]

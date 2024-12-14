@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio.session import AsyncSession
+from sqlmodel import select
 
 # local imports
 from src.sections.database.connection import get_async_session
@@ -23,13 +24,14 @@ async def create_profile(user_id: int, session: AsyncSession):
     return new_profile_object
     
 
-async def update_profile(current_profile: Profile, profile_data: UpdateProfile, session: AsyncSession):
+async def update_profile(profile_id: int, profile_data: UpdateProfile, session: AsyncSession):
+    profile = await session.scalar(select(Profile).where(Profile.id==profile_id))
     try:
         for k, v in profile_data.model_dump().items():
-            setattr(current_profile, k, v)
+            setattr(profile, k, v)
         await session.commit()
     except Exception as error:
         print("\nERROR in updating profile\n", error)
         return None
-    return current_profile
+    return profile
     

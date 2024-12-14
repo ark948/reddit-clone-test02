@@ -37,11 +37,11 @@ async def index():
 
 # this works so far
 @router.get('/get-profile', response_model=ProfileModel, status_code=status.HTTP_200_OK)
-async def get_profile_from_user_id(user_id: int, session: AsyncSession=Depends(get_async_session)):
+async def get_profile_from_user_id(user: getCurrentUserDep, session: AsyncSession=Depends(get_async_session)):
     stmt = await session.execute(
         select(User)
         .options(joinedload(User.profile))
-        .where(User.id==user_id)
+        .where(User.id==user.id)
     )
     result = stmt.scalar()
     return result.profile
@@ -49,8 +49,7 @@ async def get_profile_from_user_id(user_id: int, session: AsyncSession=Depends(g
 
 
 @router.get('/get-profile-v2', response_model=ProfileModel, status_code=status.HTTP_200_OK)
-async def get_profile_from_user_id_v2(user_id: int, session: AsyncSession=Depends(get_async_session)):
-    user = await session.scalar(select(User).where(User.id==user_id))
+async def get_profile_from_user_id_v2(user: getCurrentUserDep, session: AsyncSession=Depends(get_async_session)):
     stmt = await session.execute(
         select(Profile)
         .where(Profile.id==user.profile_id)
@@ -59,7 +58,8 @@ async def get_profile_from_user_id_v2(user_id: int, session: AsyncSession=Depend
     return profile
 
 
-@router.get('/get-profile-v3')
-async def get_profile_v3(user: getCurrentUserDep, session: AsyncSessionDep):
-    ic(user)
+@router.put('/get-profile-v3', response_model=ProfileModel, status_code=status.HTTP_200_OK)
+async def get_profile_v3(user: getCurrentUserDep, profile_update_data: UpdateProfile, session: AsyncSessionDep):
+    response = await crud.update_profile(user.profile_id, profile_update_data, session)
+    return response
     

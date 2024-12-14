@@ -123,6 +123,24 @@
     (to get the name of constraints, run describe table in psql)
 
 
+14. attempting to setup fake redis:
+    (using fakeredis)
+    FakeRedis is a pure-Python implementation of the Redis key-value store.
+    It enables running tests requiring redis server without an actual server.
+    1. > pip install fakeredis
+    update requirements.txt
+    there is a example for a pytest fixture in fakeredis documentation
+    i have to functions that use redis (in redis.py):
+        add_jti_to_blocklist
+        token_in_blocklist
+    - add_jti_to_blocklist is used in logout route,
+    so any tests that logs user out, will call this
+    - token_in_blocklist is used in TokenBearer, so any route that uses login will use this
+    NOTE: the documentation is amazingly thorough, it has full examples for django, fastapi with pytest fixtures
+    I should update the redis client to dependency (so later we can use dependency injection in testing)
+    Attempting to update redis client to a dependency
+
+
 users:
     id = 1
     johndoe
