@@ -16,9 +16,11 @@ ic.configureOutput(includeContext=True)
 from src.apps.profiles import crud
 from src.sections.database.models import Profile, User
 from src.sections.authentication.schemas import UserModel
-from src.apps.profiles.schemas import ProfileModel
+from src.apps.profiles.schemas import ProfileModel, UpdateProfile
 from src.sections.database.connection import get_async_session
 from src.apps.profiles.schemas import ProfileFromUser
+from src.sections.authentication.dependencies import getCurrentUserDep
+from src.sections.database.dependencies import AsyncSessionDep
 
 
 router = APIRouter(
@@ -55,4 +57,9 @@ async def get_profile_from_user_id_v2(user_id: int, session: AsyncSession=Depend
     )
     profile = stmt.scalar()
     return profile
+
+
+@router.get('/get-profile-v3')
+async def get_profile_v3(user: getCurrentUserDep, session: AsyncSessionDep):
+    ic(user)
     

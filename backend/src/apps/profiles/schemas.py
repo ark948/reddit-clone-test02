@@ -23,3 +23,8 @@ class ProfileFromUser(BaseModel):
     role: Optional[str]
     is_verified: bool
     profile: Optional[ProfileModel]
+
+
+class UpdateProfile(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
