@@ -13,4 +13,5 @@ def generate_password_hash(password: str) -> str:
 
 
 def verify_password(password: str, hash: str) -> bool:
+    logging.getLogger('passlib').setLevel(logging.ERROR)
     return pwdContext.verify(password, hash)
