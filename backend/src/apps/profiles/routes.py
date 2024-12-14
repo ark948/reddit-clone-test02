@@ -33,6 +33,7 @@ async def index():
 
 
 
+# this works so far
 @router.get('/get-profile', response_model=ProfileModel, status_code=status.HTTP_200_OK)
 async def get_profile_from_user_id(user_id: int, session: AsyncSession=Depends(get_async_session)):
     stmt = await session.execute(
@@ -42,3 +43,16 @@ async def get_profile_from_user_id(user_id: int, session: AsyncSession=Depends(g
     )
     result = stmt.scalar()
     return result.profile
+
+
+
+@router.get('/get-profile-v2', response_model=ProfileModel, status_code=status.HTTP_200_OK)
+async def get_profile_from_user_id_v2(user_id: int, session: AsyncSession=Depends(get_async_session)):
+    user = await session.scalar(select(User).where(User.id==user_id))
+    stmt = await session.execute(
+        select(Profile)
+        .where(Profile.id==user.profile_id)
+    )
+    profile = stmt.scalar()
+    return profile
+    

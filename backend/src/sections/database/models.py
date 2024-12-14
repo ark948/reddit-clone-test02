@@ -47,3 +47,7 @@ class Profile(SQLModel, table=True):
         sa_relationship_kwargs={"uselist": False},
         back_populates="profile"
     )
+
+    @property
+    def get_related_user(self):
+        return self.user
