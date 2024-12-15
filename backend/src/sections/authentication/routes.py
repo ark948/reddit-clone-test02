@@ -2,6 +2,7 @@ from typing import Dict, Union, List, Tuple
 from sqlmodel.ext.asyncio.session import AsyncSession
 from datetime import timedelta, datetime
 from sqlmodel import select, insert
+from redis.asyncio import Redis
 from fastapi.responses import JSONResponse
 from fastapi import (
     APIRouter,
@@ -16,6 +17,8 @@ ic.configureOutput(includeContext=True)
 
 # local imports
 from src.sections import redis
+from src.sections.redis import get_redis
+from src.sections.redis import add_jti_to_blocklist, token_in_blocklist
 from src.sections.redis import getRedisDep
 from src.configs.settings import Config
 from src.sections.database.models import User
@@ -353,3 +356,13 @@ async def revoke_token_v2(r: getRedisDep, token_details: dict = Depends(AccessTo
         content={"message": "Logged out successfully (V2)."},
         status_code=status.HTTP_200_OK
     )
+
+
+@router.get('/logout-v3', status_code=status.HTTP_200_OK)
+async def revoke_token_v3(token_details: dict = Depends(AccessTokenBearer()), redis_client: Redis = Depends(get_redis)):
+    try:
+        await add_jti_to_blocklist(token_details['jti'], redis_client)
+        return "Ok"
+    except Exception as error:
+        print("Error in calling add_jti_to_blocklist", error)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

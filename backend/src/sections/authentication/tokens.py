@@ -4,15 +4,11 @@ from fastapi.security.http import HTTPAuthorizationCredentials
 
 
 # local imports
+from src.sections.redis import token_in_blocklist
 from src.sections.authentication.utils import decode_token
 from src.sections.errors import (
     InvalidToken, RefreshTokenRequired, AccessTokenRequired
 )
-from src.sections.redis import (
-    add_jti_to_blocklist,
-    token_in_blocklist
-)
-
 
 class TokenBearer(HTTPBearer):
     
@@ -27,8 +23,8 @@ class TokenBearer(HTTPBearer):
         if not self.token_valid(token):
             raise InvalidToken()
         
-        if await token_in_blocklist(token_data['jti']):
-            raise InvalidToken()
+        # if await token_in_blocklist(token_data['jti']):
+        #     raise InvalidToken()
 
         self.verify_token_data(token_data)
         return token_data

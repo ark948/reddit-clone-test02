@@ -13,10 +13,17 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.pool import NullPool
 from contextlib import asynccontextmanager
 import pytest_asyncio
+from redis import asyncio as redis
+import fakeredis
+from unittest import mock
+from unittest.mock import MagicMock
+
 
 
 # local imports
 from src import app
+from src.sections.redis import get_redis
+from src.sections import redis
 from src.sections.database.dependencies import get_async_session
 from src.sections.database.models import User
 from src.sections.authentication.hash import generate_password_hash
@@ -47,18 +54,28 @@ async def async_db(async_db_engine):
         await session.rollback()
 
 
+@pytest_asyncio.fixture(scope="function")
+async def redis_client() -> AsyncIterator[redis.Redis]:
+    async with fakeredis.FakeAsyncRedis() as client:
+        yield client
+
+
+# override_get_db was made async
 @pytest_asyncio.fixture(scope="function", autouse=True)
-async def async_client(async_db):
-    def override_get_db():
+async def async_client(async_db, redis_client):
+    async def override_get_db():
         yield async_db
-    app.dependency_overrides[get_async_session] = override_get_db
+
+    async def override_get_redis():
+        yield redis_client
+    app.dependency_overrides[get_async_session, get_redis] = override_get_db, override_get_redis
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://localhost") as client:
         yield client
 
 
 @pytest_asyncio.fixture(scope="function")
 async def sample_user(async_db: AsyncSession):
-    user_obj = User(username="test01", email="test01@email.com", password_hash=generate_password_hash('test123'))
+    user_obj = User(username="test01", email="test01@email.com", password_hash=generate_password_hash('test123'), role="user")
     async_db.add(user_obj)
     await async_db.commit()
     return user_obj

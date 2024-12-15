@@ -1,5 +1,4 @@
 from passlib.context import CryptContext
-from passlib.exc import UnknownHashError
 import logging
 
 pwdContext = CryptContext(

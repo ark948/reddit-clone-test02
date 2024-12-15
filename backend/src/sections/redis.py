@@ -9,11 +9,7 @@ from src.configs.settings import Config
 JTI_EXPIRY = 3600
 
 
-# redis_client = Redis.from_url(Config.REDIS_URL)
-redis_client = async_redis.Redis.from_url(Config.REDIS_URL)
-
-
-async def add_jti_to_blocklist(jti: str) -> None:
+async def add_jti_to_blocklist(jti: str, redis_client: async_redis.Redis) -> None:
     print("REDIS TASK STARTED (adding token to blocklist)...")
     try:
         await redis_client.set(name=jti, value="", ex=JTI_EXPIRY)
@@ -22,7 +18,9 @@ async def add_jti_to_blocklist(jti: str) -> None:
     print("REDIS TASK FINISHED.")
 
 
-async def token_in_blocklist(jti: str) -> bool:
+# returns true if given exists
+# False if it is None
+async def token_in_blocklist(jti: str, redis_client: async_redis.Redis) -> bool:
     try:
         jti = await redis_client.get(jti)
     except Exception as error:
@@ -32,8 +30,8 @@ async def token_in_blocklist(jti: str) -> bool:
 
 
 async def get_redis():
-    async with redis_client as r:
-        yield r
+    async with async_redis.Redis.from_url(Config.REDIS_URL) as client:
+        yield client
 
 
 getRedisDep = Annotated[Redis, Depends(get_redis)]
