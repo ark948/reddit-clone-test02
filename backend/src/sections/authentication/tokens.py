@@ -1,6 +1,7 @@
 from fastapi.security import HTTPBearer
 from fastapi import Request
 from fastapi.security.http import HTTPAuthorizationCredentials
+from redis.asyncio import Redis
 
 
 # local imports

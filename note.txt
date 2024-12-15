@@ -148,18 +148,6 @@ users:
     hello123 or test123
 
 
-
-packages to install:
-pytest, httpx
-
-
-
-# @pytest_asyncio.fixture(scope='function')
-# async def client() -> AsyncIterator[AsyncClient]:
-#     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-#         yield client
-
-
 running async tests with pytest: sometimes runs them with more than one backend, this is why the number of tests are weird.
 (run with pytest -v)
 

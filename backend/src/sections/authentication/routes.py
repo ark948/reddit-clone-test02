@@ -211,9 +211,18 @@ async def verify_user_account(token: str, session: AsyncSession = Depends(get_as
 
 # test done
 @router.get('/me', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
-async def user_profile(session: AsyncSessionDep, user_data=Depends(AccessTokenBearer())):
-    response = await crud.get_user_by_email(email=user_data["user"]["email"], session=session)
-    return response
+async def user_profile(session: AsyncSessionDep, user_data=Depends(AccessTokenBearer()), redis_client: Redis = Depends(get_redis)):
+    try:
+        token_is_blocked = await token_in_blocklist(user_data['jti'], redis_client=redis_client)
+    except Exception as error:
+        ic("Error in getting jti from redis", error)
+        raise HTTPException(status_code=500)
+    if token_is_blocked:
+        raise InvalidToken()
+    else:
+        user = await crud.get_user_by_email(email=user_data["user"]["email"], session=session)
+        return user
+
 
 # test done
 @router.get('/me-v2', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
@@ -229,6 +238,14 @@ async def user_profile_v3(user: getCurrentUserDep, _: bool=Depends(role_checker)
 @router.get('/me-v4', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
 async def user_profile_v4(user: getCurrentUserDep, _: getRoleCheckDep):
     return user
+
+
+@router.get('/me-v5', response_model=Union[UserModel, None], status_code=status.HTTP_200_OK)
+async def user_profile_v5(session: AsyncSessionDep, user_data=Depends(AccessTokenBearer()), redis_client: Redis = Depends(get_redis)):
+    if await token_in_blocklist(user_data["jti"], redis_client) == False:
+        return await crud.get_user_by_email(user_data['user']['email'], session)
+    else:
+        raise InvalidToken()
 
 
 @router.post('/password-reset-request', status_code=status.HTTP_200_OK)
