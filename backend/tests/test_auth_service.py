@@ -24,10 +24,10 @@ async def test_user_service_create_user(async_db: AsyncSession):
     new_user_data = UserCreateModel(username="tester01", email="tester01@email.com", password="test1234")
     result = await u.create_new_user(new_user_data)
 
-    assert result.id == 1
-    assert result.email == new_user_data.email
-    assert result.username == new_user_data.username
-    assert isinstance(result, User)
+    assert result["user"].id == 1
+    assert result["user"].email == new_user_data.email
+    assert result["user"].username == new_user_data.username
+    assert isinstance(result["user"], User)
 
 
 @pytest.mark.asyncio
@@ -37,8 +37,8 @@ async def test_user_service_create_user_password(async_db: AsyncSession):
     result = await u.create_new_user(new_user_data)
 
     assert hasattr(result, 'password') == False
-    assert result.password_hash != new_user_data.password
-    assert verify_password(new_user_data.password, result.password_hash) == True
+    assert result["user"].password_hash != new_user_data.password
+    assert verify_password(new_user_data.password, result["user"].password_hash) == True
 
 
 @pytest.mark.asyncio
@@ -47,9 +47,9 @@ async def test_user_service_get_user(async_db: AsyncSession):
     new_user_data = UserCreateModel(username="tester01", email="tester01@email.com", password="test1234")
     result = await u.create_new_user(new_user_data)
 
-    user_obj = await u.get_user(result.id)
+    user_obj = await u.get_user(result["user"].id)
 
-    assert user_obj.id == result.id
+    assert user_obj.id == result["user"].id
     assert user_obj.username == "tester01"
     assert isinstance(user_obj, User)
 

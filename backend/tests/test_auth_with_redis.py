@@ -38,7 +38,7 @@ async def test_user_profile(async_client: AsyncClient, sample_user):
 
     assert resp.status_code == 200
     data = resp.json()
-    assert data == "Ok"
+    assert data == {"message": "Logout OK"}
 
     resp = await async_client.get('auth/me', headers={
         "Authorization": f"Bearer {login_data['access_token']}"

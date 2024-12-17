@@ -141,14 +141,13 @@ async def create_user_account(user_data: UserCreateModel, session: AsyncSessionD
 
 
 # test done
-@router.post('/signup-v2', response_model=UserModel, status_code=status.HTTP_201_CREATED)
+@router.post('/signup-v2', response_model=Dict, status_code=status.HTTP_201_CREATED)
 async def create_user_account_v2(user_data: UserCreateModel, u: UserServiceDep):
     response = await u.create_new_user(user_data)
     if response:
         return response
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                        detail="There was a problem, please check your input.")
-
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # test done
@@ -378,11 +377,11 @@ async def revoke_token_v2(r: getRedisDep, token_details: dict = Depends(AccessTo
     )
 
 
-@router.get('/logout-v3', status_code=status.HTTP_200_OK)
+@router.get('/logout-v3', response_model=Dict, status_code=status.HTTP_200_OK)
 async def revoke_token_v3(token_details: dict = Depends(AccessTokenBearer()), redis_client: Redis = Depends(get_redis)):
     try:
         await add_jti_to_blocklist(token_details['jti'], redis_client)
-        return "Ok"
+        return {"message": "Logout OK"}
     except Exception as error:
         print("Error in calling add_jti_to_blocklist", error)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

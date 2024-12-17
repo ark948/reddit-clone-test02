@@ -180,8 +180,9 @@ async def test_auth_create_user_account_v2(async_db: AsyncSession, async_client:
     resp = await async_client.post('auth/signup-v2', json=data)
     assert resp.status_code == 201
     
-    assert resp.json()['email'] == data['email']
-    assert resp.json()['username'] == data['username']
+    response_data = resp.json()
+    assert response_data["user"]['username'] == data['username']
+    assert response_data["user"]['email'] == data["email"]
 
 
 @pytest.mark.asyncio
@@ -329,13 +330,13 @@ async def test_auth_logout_route(async_client: AsyncClient, sample_user):
     assert resp.status_code == 200
     login_data = resp.json()
 
-    resp = await async_client.get('auth/logout', headers={
+    resp = await async_client.get('auth/logout-v3', headers={
         "Authorization": f"Bearer {login_data['access_token']}"
     })
 
     assert resp.status_code == 200
     data = resp.json()
-    assert data["message"] == "Logged out successfully."
+    assert data == {"message": "Logout OK"}
 
 
 @pytest.mark.asyncio
