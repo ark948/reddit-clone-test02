@@ -302,12 +302,15 @@ async def reset_account_password(token: str, passwords: PasswordResetConfirmMode
 
 # test done
 @router.post('/refresh-token')
-async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
-    expiry_timestamp = token_details['exp']
-    if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
-        new_access_token = create_access_token(user_data=token_details["user"])
-        return JSONResponse(content={"access_token": new_access_token})
-    raise InvalidToken()
+async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer()), redis_client: Redis = Depends(get_redis)):
+    if await token_in_blocklist(token_details['jti'], redis_client) == False:
+        expiry_timestamp = token_details['exp']
+        if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
+            new_access_token = create_access_token(user_data=token_details["user"])
+            return JSONResponse(content={"access_token": new_access_token})
+        raise InvalidToken()
+    else:
+        raise InvalidToken()
 
 
 
