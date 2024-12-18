@@ -12,3 +12,7 @@ apps_router = APIRouter(
 
 apps_router.include_router(profile_router)
 apps_router.include_router(community_router)
+
+@apps_router.get('/')
+async def apps_route_test():
+    return "this is apps route"

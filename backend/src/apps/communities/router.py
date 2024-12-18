@@ -1,3 +1,5 @@
+from icecream import ic
+ic.configureOutput(includeContext=True)
 from typing import (
     List,
     Dict
@@ -15,7 +17,7 @@ from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.authentication.dependencies import getCurrentUserDep
 from src.apps.communities.schemas import (
     CommunityModel,
-    CreateCommunity
+    CreateCommunity,
 )
 
 
@@ -24,8 +26,11 @@ router = APIRouter(
     tags=['community']
 )
 
+@router.get('/test')
+async def community_test_route():
+    return 'community test route'
 
-@router.get('/{item_id}', response_model=CommunityModel, status_code=status.HTTP_200_OK)
+@router.get('/get-community/{item_id}', response_model=CommunityModel, status_code=status.HTTP_200_OK)
 async def get_community(item_id: int, session: AsyncSessionDep):
     response = await crud.get_community(item_id, session)
     return response
@@ -57,3 +62,8 @@ async def join_community(community_id: int, user: getCurrentUserDep, session: As
         "message": "Successfully joined.",
         "community": community_obj
     }
+
+
+@router.get('/user-joined-list', response_model=List, status_code=status.HTTP_200_OK)
+async def get_list_of_joined_comms_for_current_user(user: getCurrentUserDep, session: AsyncSessionDep):
+    return user.communities
