@@ -1,6 +1,3 @@
-import pytest
-import asyncio
-import pytest_anyio
 from httpx import AsyncClient
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
@@ -25,9 +22,12 @@ from src import app
 from src.sections.redis import get_redis
 from src.sections import redis
 from src.sections.database.dependencies import get_async_session
-from src.sections.database.models import User
 from src.sections.authentication.hash import generate_password_hash
 from src.configs.settings import Config
+from src.sections.database.models import (
+    User,
+    Community
+)
 
 
 # this engine may not support exec method from sqlmodel session
@@ -94,6 +94,14 @@ async def multiple_users(async_db: AsyncSession):
     async_db.add(user_obj3)
     await async_db.commit()
     return [user_obj1, user_obj2, user_obj3]
+
+
+@pytest_asyncio.fixture(scope="function")
+async def sample_community(async_db: AsyncSession):
+    community_obj = Community(title="tech_fans", about="Cool facts about technology.")
+    async_db.add(community_obj)
+    await async_db.commit()
+    return community_obj
 
 
 # pytest-asyncio provides event loop
