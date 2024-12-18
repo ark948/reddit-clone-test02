@@ -15,6 +15,7 @@ from fastapi import (
 from src.apps.communities import crud
 from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.authentication.dependencies import getCurrentUserDep
+from src.apps.communities import actions
 from src.apps.communities.schemas import (
     CommunityModel,
     CreateCommunity,
@@ -44,26 +45,15 @@ async def create_community(data: CreateCommunity, session: AsyncSessionDep):
 
 @router.post('/join/{community_id}', response_model=Dict, status_code=status.HTTP_200_OK)
 async def join_community(community_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
-    try:
-        community_obj = await crud.get_community(community_id, session)
-    except Exception as error:
-        print(error)
+    resposne = await actions.user_join_community(community_id, user, session)
+    if resposne:
+        return {
+            "message": "Successfully joined."
+        }
+    else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    try:
-        user.communities.append(community_obj)
-    except Exception as error:
-        print(error)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    try:
-        await session.commit()
-    except Exception as error:
-        print("ERROR IN SAVE", error)
-    return {
-        "message": "Successfully joined.",
-        "community": community_obj
-    }
 
 
 @router.get('/user-joined-list', response_model=List, status_code=status.HTTP_200_OK)
-async def get_list_of_joined_comms_for_current_user(user: getCurrentUserDep, session: AsyncSessionDep):
+async def get_list_of_joined_comms_for_current_user(user: getCurrentUserDep):
     return user.communities
