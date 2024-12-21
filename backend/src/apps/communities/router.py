@@ -62,6 +62,15 @@ async def join_community(community_id: int, user: getCurrentUserDep, session: As
         return {"message": "Successfully joined."}
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@router.post('/leave/{community_id}', response_model=Dict, status_code=status.HTTP_200_OK)
+async def leave_community(community_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
+    response = await actions.user_leave_community(community_id, user, session)
+    if response:
+        return {"message": "Successfully left community."}
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @router.get('/user-joined-list', response_model=List, status_code=status.HTTP_200_OK)
