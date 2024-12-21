@@ -26,6 +26,7 @@ from src.apps.communities.service import CommunityService
 from src.apps.communities.schemas import (
     CommunityModel,
     CreateCommunity,
+    CommunityModelCompact
 )
 
 
@@ -70,9 +71,27 @@ async def leave_community(community_id: int, user: getCurrentUserDep, session: A
     if response:
         return {"message": "Successfully left community."}
     else:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        if len(user.communities) == 0:
+            return {"message": "You are not a member of this community or community does not exist."}
 
 
 @router.get('/user-joined-list', response_model=List, status_code=status.HTTP_200_OK)
 async def get_list_of_joined_comms_for_current_user(user: getCurrentUserDep):
     return user.communities
+
+
+@router.get('/members-count/{item_id}', response_model=int, status_code=status.HTTP_200_OK)
+async def get_no_of_community_members(item_id: int, session: AsyncSessionDep):
+    community_obj = await crud.get_community(item_id, session)
+    members_count = len(community_obj.users)
+    return members_count
+
+@router.get('/joined-count', response_model=int, status_code=status.HTTP_200_OK)
+async def get_no_of_communities_joined_by_user(user: getCurrentUserDep, session: AsyncSessionDep):
+    return len(user.communities)
+
+
+@router.get('/get-all', response_model=List[CommunityModelCompact], status_code=status.HTTP_200_OK)
+async def get_all_communities(session: AsyncSessionDep):
+    response = await crud.get_all(session)
+    return response

@@ -7,6 +7,9 @@ from uuid import UUID
 from src.sections.database.models import User
 
 
+class CommunityModelCompact(BaseModel):
+    id: int
+    title: str
 
 
 class CommunityMember(BaseModel):

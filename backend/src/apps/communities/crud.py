@@ -46,3 +46,11 @@ async def create_community(data: CreateCommunity, session: AsyncSession) -> Unio
         print(error)
         return None
     return community_oject
+
+async def get_all(session: AsyncSession):
+    try:
+        obj_list = await session.scalars(select(Community))
+    except Exception as error:
+        print("ERROR IN GETTING LIST", error)
+
+    return obj_list.all()
