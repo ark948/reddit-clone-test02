@@ -21,12 +21,14 @@ from unittest.mock import MagicMock
 from src import app
 from src.sections.redis import get_redis
 from src.sections import redis
+from src.sections.authentication.utils import create_access_token
 from src.sections.database.dependencies import get_async_session
 from src.sections.authentication.hash import generate_password_hash
 from src.configs.settings import Config
 from src.sections.database.models import (
     User,
-    Community
+    Community,
+    Profile
 )
 
 
@@ -85,6 +87,16 @@ async def sample_user(async_db: AsyncSession):
 
 
 @pytest_asyncio.fixture(scope="function")
+async def login_data(sample_user):
+    user_data = {
+        "email": sample_user.email,
+        "user_uid": str(sample_user.uid)
+    }
+    token = create_access_token(user_data)
+    return token
+
+
+@pytest_asyncio.fixture(scope="function")
 async def multiple_users(async_db: AsyncSession):
     user_obj1 = User(username="test01", email="test01@email.com", password_hash=generate_password_hash('test123'))
     user_obj2 = User(username="test02", email="test02@email.com", password_hash=generate_password_hash('test123'))
@@ -94,6 +106,14 @@ async def multiple_users(async_db: AsyncSession):
     async_db.add(user_obj3)
     await async_db.commit()
     return [user_obj1, user_obj2, user_obj3]
+
+
+@pytest_asyncio.fixture(scope="function")
+async def sample_profile(async_db: AsyncSession, sample_user):
+    profile_obj = Profile(first_name="Mike", last_name="Cobalt", karma=0, user=sample_user)
+    async_db.add(profile_obj)
+    await async_db.commit()
+    return profile_obj
 
 
 @pytest_asyncio.fixture(scope="function")

@@ -58,8 +58,8 @@ async def get_profile_from_user_id_v2(user: getCurrentUserDep, session: AsyncSes
     return profile
 
 
-@router.put('/get-profile-v3', response_model=ProfileModel, status_code=status.HTTP_200_OK)
-async def get_profile_v3(user: getCurrentUserDep, profile_update_data: UpdateProfile, session: AsyncSessionDep):
+@router.put('/update-profile', response_model=ProfileModel, status_code=status.HTTP_200_OK)
+async def update_profile(user: getCurrentUserDep, profile_update_data: UpdateProfile, session: AsyncSessionDep):
     response = await crud.update_profile(user.profile_id, profile_update_data, session)
     return response
     

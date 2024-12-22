@@ -7,6 +7,17 @@ from src.sections.database.models import Profile
 from src.apps.profiles.schemas import UpdateProfile
 
 
+async def get_profile(item_id: int, sessino: AsyncSession):
+    try:
+        profile_obj = await sessino.scalar(
+            select(Profile).where(Profile.id==item_id)
+        )
+    except Exception as error:
+        print("ERROR IN GETTING profile ITEM: ", error)
+        return None
+    return profile_obj
+
+
 async def create_profile(user_id: int, session: AsyncSession):
     try:
         new_profile_object = Profile(user_id=user_id)

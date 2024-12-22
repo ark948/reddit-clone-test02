@@ -13,6 +13,7 @@ import logging
 ACCESS_TOKEN_EXPIRY = 3600
 
 def create_access_token(user_data: dict, expiry: timedelta = None, refresh: bool = False):
+    # user_data -> email and user's uid
     payload = {}
     payload['user'] = user_data
     payload['exp'] = datetime.now() + (expiry if expiry is not None else timedelta(seconds=ACCESS_TOKEN_EXPIRY))
