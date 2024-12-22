@@ -11,6 +11,7 @@ from src.sections.database.models import User
 from src.sections.database.models import Profile
 from src.sections.database.models import Community
 from src.sections.database.models import UserCommunity
+from src.sections.database.models import Post
 from sqlmodel import SQLModel
 from src.configs.settings import Config
 

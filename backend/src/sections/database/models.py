@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
 from sqlalchemy.dialects import postgresql as pg
+from sqlalchemy.types import Text
+from sqlalchemy import ForeignKey
 from typing import (
     Optional, List
 )
@@ -27,6 +29,7 @@ class User(SQLModel, table=True):
         back_populates="users",
         sa_relationship_kwargs={"lazy": "selectin"}
     )
+    posts: List["Post"] = Relationship(back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"})
     profile_id: Optional[int] = Field(default=None, foreign_key="profiles.id")
     profile: Optional["Profile"] = Relationship(back_populates="user")
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
@@ -35,6 +38,18 @@ class User(SQLModel, table=True):
     def __repr__(self):
         return f'<User {self.username}>'
     
+
+class Post(SQLModel, table=True):
+    __tablename__ = "posts"
+
+    id: int = Field(primary_key=True)
+    title: str = Field(nullable=False)
+    body: str = Field(nullable=False) # update this later
+    owner: User = Relationship(back_populates="posts")
+    owner_id: int = Field(default=None, foreign_key="users.id")
+    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+
 
 class Profile(SQLModel, table=True):
     __tablename__ = "profiles"
