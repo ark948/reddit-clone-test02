@@ -39,6 +39,21 @@ class User(SQLModel, table=True):
         return f'<User {self.username}>'
     
 
+class Community(SQLModel, table=True):
+    __tablename__ = "communities"
+
+    id: int = Field(primary_key=True)
+    title: str = Field(nullable=False)
+    about: str = Field(nullable=False)
+    users: List["User"] = Relationship(
+        link_model=UserCommunity,
+        back_populates="communities",
+        sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    posts: List["Post"] = Relationship(back_populates="community", sa_relationship_kwargs={"lazy": "selectin"})
+
+
+
 class Post(SQLModel, table=True):
     __tablename__ = "posts"
 
@@ -47,6 +62,8 @@ class Post(SQLModel, table=True):
     body: str = Field(nullable=False) # update this later
     owner: User = Relationship(back_populates="posts")
     owner_id: int = Field(default=None, foreign_key="users.id")
+    community: Community = Relationship(back_populates="posts")
+    community_id: int = Field(default=None, foreign_key="communities.id")
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 
@@ -66,16 +83,3 @@ class Profile(SQLModel, table=True):
     @property
     def get_related_user(self):
         return self.user
-    
-
-class Community(SQLModel, table=True):
-    __tablename__ = "communities"
-
-    id: int = Field(primary_key=True)
-    title: str = Field(nullable=False)
-    about: str = Field(nullable=False)
-    users: List["User"] = Relationship(
-        link_model=UserCommunity,
-        back_populates="communities",
-        sa_relationship_kwargs={"lazy": "selectin"}
-    )

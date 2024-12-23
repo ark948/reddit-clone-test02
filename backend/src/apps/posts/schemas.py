@@ -10,6 +10,7 @@ class PostModel(BaseModel):
     title: str
     body: str
     owner_id: int
+    community_id: int
     created_at: datetime
     updated_at: datetime
 

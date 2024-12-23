@@ -25,9 +25,10 @@ class PostService:
         return post_obj
             
 
-    async def create_post(self, user_id: int, post_data: CreatePost) -> Post | None:
+    async def create_post(self, user_id: int, post_data: CreatePost, community_id: int) -> Post | None:
         post_obj = Post(**post_data.model_dump())
         post_obj.owner_id = user_id
+        post_obj.community_id = community_id
         if isinstance(post_obj, Post) == False: raise TypeError("ERROR IN CREATING post MODEL")
         try:
             self.session.add(post_obj)
@@ -36,3 +37,4 @@ class PostService:
             print("ERROR IN COMMITTING post MODEL", error)
             return None
         return post_obj
+    

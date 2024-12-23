@@ -21,6 +21,7 @@ from src.apps.communities import crud
 from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.authentication.dependencies import getCurrentUserDep
 from src.apps.communities import actions
+from src.apps.communities import utils
 from src.apps.communities.dependencies import get_community_service_dep
 from src.apps.communities.service import CommunityService
 from src.apps.communities.schemas import (
@@ -77,6 +78,9 @@ async def leave_community(community_id: int, user: getCurrentUserDep, session: A
 
 @router.get('/user-joined-list', response_model=List, status_code=status.HTTP_200_OK)
 async def get_list_of_joined_comms_for_current_user(user: getCurrentUserDep):
+    # print("\n\n", type(user.communities), "\n\n")
+    for community in user.communities:
+        ic(community)
     return user.communities
 
 
@@ -95,3 +99,11 @@ async def get_no_of_communities_joined_by_user(user: getCurrentUserDep, session:
 async def get_all_communities(session: AsyncSessionDep):
     response = await crud.get_all(session)
     return response
+
+
+@router.get('/check-joined/{community_id}', response_model=bool, status_code=status.HTTP_200_OK)
+async def is_user_member(community_id: int, user: getCurrentUserDep):
+    for community in user.communities:
+        if community_id == community.id:
+            return True
+    return False
