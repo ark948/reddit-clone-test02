@@ -12,6 +12,7 @@ from src.apps.posts import schemas
 from src.sections.authentication.dependencies import getCurrentUserDep
 from src.sections.database.dependencies import AsyncSessionDep
 from src.apps.posts.deps import postServiceDep
+from src.apps.posts import actions
 
 
 
@@ -52,7 +53,17 @@ async def all_posts_of_user(user: getCurrentUserDep):
     return user.posts
 
 
-@router.post('/like-post/{post_id}', response_model=schemas.PostModel, status_code=status.HTTP_200_OK)
-async def increase_post_reactions(post_id: int, user: getCurrentUserDep):
-    # each user can only like the same post once
-    pass
+
+@router.get('/user-liked-posts/{post_id}', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)
+async def get_user_liked_posts(user: getCurrentUserDep, session: AsyncSessionDep):
+    return user.likes
+
+
+
+@router.post('/like-post/{post_id}', response_model=dict, status_code=status.HTTP_200_OK)
+async def increase_post_reactions(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
+    resposne = await actions.user_like_post(post_id, user, session)
+    if resposne:
+        return {
+            "message": "Like successful"
+        }

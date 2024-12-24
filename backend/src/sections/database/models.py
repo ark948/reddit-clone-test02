@@ -14,6 +14,15 @@ class UserCommunity(SQLModel, table=True):
     user_id: int = Field(default=None, foreign_key="users.id", primary_key=True)
     community_id: int = Field(default=None, foreign_key="communities.id", primary_key=True)
 
+
+class Like(SQLModel, table=True):
+    __tablename__ = "likes"
+
+    id: int = Field(primary_key=True)
+    user_id: int = Field(foreign_key="users.id", nullable=False)
+    post_id: int = Field(foreign_key="posts.id", nullable=False)
+
+
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
@@ -32,6 +41,11 @@ class User(SQLModel, table=True):
     posts: List["Post"] = Relationship(back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"})
     profile_id: Optional[int] = Field(default=None, foreign_key="profiles.id")
     profile: Optional["Profile"] = Relationship(back_populates="user")
+    likes: List["Post"] = Relationship(
+        link_model=Like,
+        back_populates="liked_by",
+        sa_relationship_kwargs={"lazy": "selectin"}
+    )
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 
@@ -65,6 +79,11 @@ class Post(SQLModel, table=True):
     owner_id: int = Field(default=None, foreign_key="users.id")
     community: Community = Relationship(back_populates="posts")
     community_id: int = Field(default=None, foreign_key="communities.id")
+    liked_by: List["User"] = Relationship(
+        link_model=Like,
+        back_populates="likes",
+        sa_relationship_kwargs={"lazy": "selectin"}
+    )
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 

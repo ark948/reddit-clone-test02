@@ -12,6 +12,7 @@ from src.sections.database.models import Profile
 from src.sections.database.models import Community
 from src.sections.database.models import UserCommunity
 from src.sections.database.models import Post
+from src.sections.database.models import Like
 from sqlmodel import SQLModel
 from src.configs.settings import Config
 
