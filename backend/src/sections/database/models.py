@@ -60,6 +60,7 @@ class Post(SQLModel, table=True):
     id: int = Field(primary_key=True)
     title: str = Field(nullable=False)
     body: str = Field(nullable=False) # update this later
+    reactions: int = Field(default=0, nullable=False)
     owner: User = Relationship(back_populates="posts")
     owner_id: int = Field(default=None, foreign_key="users.id")
     community: Community = Relationship(back_populates="posts")

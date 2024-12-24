@@ -50,3 +50,9 @@ async def create_post(community_id: int, user: getCurrentUserDep, post_data: sch
 @router.get('/get-user-posts', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)
 async def all_posts_of_user(user: getCurrentUserDep):
     return user.posts
+
+
+@router.post('/like-post/{post_id}', response_model=schemas.PostModel, status_code=status.HTTP_200_OK)
+async def increase_post_reactions(post_id: int, user: getCurrentUserDep):
+    # each user can only like the same post once
+    pass

@@ -9,6 +9,7 @@ class PostModel(BaseModel):
     id: int
     title: str
     body: str
+    reactions: int
     owner_id: int
     community_id: int
     created_at: datetime
