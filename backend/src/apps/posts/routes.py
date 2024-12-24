@@ -54,7 +54,7 @@ async def all_posts_of_user(user: getCurrentUserDep):
 
 
 
-@router.get('/user-liked-posts/{post_id}', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)
+@router.get('/user-liked-posts', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)
 async def get_user_liked_posts(user: getCurrentUserDep, session: AsyncSessionDep):
     return user.likes
 
@@ -64,6 +64,4 @@ async def get_user_liked_posts(user: getCurrentUserDep, session: AsyncSessionDep
 async def increase_post_reactions(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
     resposne = await actions.user_like_post(post_id, user, session)
     if resposne:
-        return {
-            "message": "Like successful"
-        }
+        return resposne
