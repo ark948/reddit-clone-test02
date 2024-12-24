@@ -65,3 +65,10 @@ async def increase_post_reactions(post_id: int, user: getCurrentUserDep, session
     resposne = await actions.user_like_post(post_id, user, session)
     if resposne:
         return resposne
+    
+
+@router.post('/remove-like-from-post/{post_id}', response_model=dict, status_code=status.HTTP_200_OK)
+async def decrease_post_reactions(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
+    resposne = await actions.user_remove_like_from_post(post_id, user, session)
+    if resposne:
+        return resposne
