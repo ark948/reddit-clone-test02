@@ -124,4 +124,13 @@ async def sample_community(async_db: AsyncSession):
     return community_obj
 
 
+@pytest_asyncio.fixture(scope="function")
+async def multiple_communities(async_db: AsyncSession):
+    community_obj01 = Community(title="co 1", about="about co 1")
+    community_obj02 = Community(title="co 2", about="about co 2")
+    community_obj03 = Community(title="co 3", about="about co 3")
+    async_db.add_all([community_obj01, community_obj02, community_obj03])
+    await async_db.commit()
+    return [community_obj01, community_obj02, community_obj03]
+
 # pytest-asyncio provides event loop

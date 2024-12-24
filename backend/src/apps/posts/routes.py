@@ -48,5 +48,5 @@ async def create_post(community_id: int, user: getCurrentUserDep, post_data: sch
 
 
 @router.get('/get-user-posts', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)
-async def all_posts_of_user(user: getCurrentUserDep, session: AsyncSessionDep, ps: postServiceDep):
+async def all_posts_of_user(user: getCurrentUserDep):
     return user.posts
