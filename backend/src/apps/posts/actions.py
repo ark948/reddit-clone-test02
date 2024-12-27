@@ -73,3 +73,23 @@ async def user_dislike_post(post_id: int, user: User, session: AsyncSession) -> 
         print("ERROR IN COMMIT", error)
         return {"message": "Error occurred."}
     
+
+async def user_remove_dislike_from_post(post_id: int, user: User, session: AsyncSession) -> dict[str, str]:
+    postObj = await crud.get_post(post_id, session)
+    if postObj is None:
+        return {"message": "Post not found - 404"}
+    
+    if postObj in user.dislikes:
+        user.dislikes.remove(postObj)
+        postObj.reactions += 1
+    else:
+        return {"message": "User has not disliked this post."}
+    
+    try:
+        await session.commit()
+        return {"message": "success"}
+    except Exception as error:
+        print("ERROR IN COMMIT", error)
+        return {"message": "Error occurred"}
+    
+    

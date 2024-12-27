@@ -61,14 +61,14 @@ async def get_user_liked_posts(user: getCurrentUserDep):
 
 
 @router.post('/like-post/{post_id}', response_model=dict, status_code=status.HTTP_200_OK)
-async def increase_post_reactions(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
+async def add_user_like_post(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
     resposne = await actions.user_like_post(post_id, user, session)
     if resposne:
         return resposne
     
 
 @router.post('/remove-like-from-post/{post_id}', response_model=dict, status_code=status.HTTP_200_OK)
-async def decrease_post_reactions(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
+async def remove_user_like_from_post(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
     resposne = await actions.user_remove_like_from_post(post_id, user, session)
     if resposne:
         return resposne
@@ -81,7 +81,14 @@ async def get_user_disliked_posts(user: getCurrentUserDep):
 
 
 @router.post('/dislike-post/{post_id}', response_model=dict, status_code=status.HTTP_200_OK)
-async def decrease_post_reactions(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
+async def add_user_dislike_post(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
     response = await actions.user_dislike_post(post_id, user, session)
     if response:
         return response
+    
+
+@router.post('/remove-dislike-from-post/{post_id}', response_model=dict, status_code=status.HTTP_200_OK)
+async def remove_user_dislike_from_post(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
+    resposne = await actions.user_remove_dislike_from_post(post_id, user, session)
+    if resposne:
+        return resposne
