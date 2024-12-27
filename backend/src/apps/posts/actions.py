@@ -7,6 +7,7 @@ ic.configureOutput(includeContext=True)
 
 
 from src.sections.database.models import User, Post, Like
+from src.apps.posts import crud
 
 
 async def user_like_post(post_id: int, user: User, session: AsyncSession) -> dict | bool:
@@ -52,3 +53,23 @@ async def user_remove_like_from_post(post_id: int, user: User, session: AsyncSes
     except Exception as error:
         print("ERROR IN COMMIT", error)
         return {"message": "Error occurred."}
+    
+
+async def user_dislike_post(post_id: int, user: User, session: AsyncSession) -> dict[str, str]:
+    postObj = await crud.get_post(post_id, session)
+
+    if postObj is not None:
+        if postObj in user.dislikes:
+            return {"message": "Already disliked."}
+        user.dislikes.append(postObj)
+        postObj.reactions -= 1
+    else:
+        return {"message": "Post not found - 404"}
+        
+    try:
+        await session.commit()
+        return {"message": "success"}
+    except Exception as error:
+        print("ERROR IN COMMIT", error)
+        return {"message": "Error occurred."}
+    

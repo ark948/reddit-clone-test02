@@ -147,6 +147,8 @@
     to calculate the total number of likes of a certain post, we have to count the number of rows in this table each time.
     to improve this, we can add a second totalling table, that will just hold the total number of likes (total number of records in likes table).
     and just update that each time, instead of performing count on the likes table. (this will be done after succeessful implementation of likes table)
+
+    now, doing the same thing for dislikes
     
 
 

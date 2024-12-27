@@ -55,7 +55,7 @@ async def all_posts_of_user(user: getCurrentUserDep):
 
 
 @router.get('/user-liked-posts', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)
-async def get_user_liked_posts(user: getCurrentUserDep, session: AsyncSessionDep):
+async def get_user_liked_posts(user: getCurrentUserDep):
     return user.likes
 
 
@@ -72,3 +72,16 @@ async def decrease_post_reactions(post_id: int, user: getCurrentUserDep, session
     resposne = await actions.user_remove_like_from_post(post_id, user, session)
     if resposne:
         return resposne
+
+
+
+@router.get('/user-disliked-posts', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)
+async def get_user_disliked_posts(user: getCurrentUserDep):
+    return user.dislikes
+
+
+@router.post('/dislike-post/{post_id}', response_model=dict, status_code=status.HTTP_200_OK)
+async def decrease_post_reactions(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
+    response = await actions.user_dislike_post(post_id, user, session)
+    if response:
+        return response

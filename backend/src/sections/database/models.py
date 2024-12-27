@@ -23,6 +23,14 @@ class Like(SQLModel, table=True):
     post_id: int = Field(foreign_key="posts.id", nullable=False)
 
 
+class Dislike(SQLModel, table=True):
+    __tablename__ = "dislikes"
+
+    id: int = Field(primary_key=True)
+    user_id: int = Field(foreign_key="users.id", nullable=False)
+    post_id: int = Field(foreign_key="posts.id", nullable=False)
+
+
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
@@ -44,6 +52,11 @@ class User(SQLModel, table=True):
     likes: List["Post"] = Relationship(
         link_model=Like,
         back_populates="liked_by",
+        sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    dislikes: List["Post"] = Relationship(
+        link_model=Dislike,
+        back_populates="disliked_by",
         sa_relationship_kwargs={"lazy": "selectin"}
     )
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
@@ -82,6 +95,11 @@ class Post(SQLModel, table=True):
     liked_by: List["User"] = Relationship(
         link_model=Like,
         back_populates="likes",
+        sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    disliked_by: List["User"] = Relationship(
+        link_model=Dislike,
+        back_populates="dislikes",
         sa_relationship_kwargs={"lazy": "selectin"}
     )
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
