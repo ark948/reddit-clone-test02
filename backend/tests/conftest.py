@@ -2,13 +2,19 @@ from httpx import AsyncClient
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncConnection, async_scoped_session, async_sessionmaker
+from sqlalchemy.ext.asyncio import (
+    create_async_engine, 
+    AsyncConnection, 
+    async_scoped_session, 
+    async_sessionmaker
+    )
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 from typing import AsyncGenerator, AsyncIterator
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.pool import NullPool
 from contextlib import asynccontextmanager
+from sqlalchemy import select
 import pytest_asyncio
 from redis import asyncio as redis
 import fakeredis
@@ -28,7 +34,8 @@ from src.configs.settings import Config
 from src.sections.database.models import (
     User,
     Community,
-    Profile
+    Profile,
+    Post
 )
 
 
@@ -132,5 +139,44 @@ async def multiple_communities(async_db: AsyncSession):
     async_db.add_all([community_obj01, community_obj02, community_obj03])
     await async_db.commit()
     return [community_obj01, community_obj02, community_obj03]
+
+
+@pytest_asyncio.fixture(scope="function")
+async def sample_post(async_db: AsyncSession, sample_user, sample_community):
+    postObj = Post(title="First Post for testing", body="And this is body.", owner_id=sample_user.id, community_id=sample_community.id)
+    async_db.add(postObj)
+    await async_db.commit()
+    return postObj
+
+
+@pytest_asyncio.fixture(scope="function")
+async def load_users_with_posts(async_db: AsyncSession):
+    # user
+    # community
+    # post
+    pre_user = User(username="test01", email="test01@email.com", password_hash=generate_password_hash('test123'))
+    pre_user2 = User(username="test02", email="test02@email.com", password_hash=generate_password_hash('test123'))
+    pre_community = Community(title="tech_fans", about="Cool facts about technology.")
+    
+    async_db.add_all([pre_user, pre_user2])
+    async_db.add(pre_community)
+    await async_db.commit()
+
+    pre_post = Post(title="First post", body="This is body.", owner_id=pre_user.id, community_id=pre_community.id)
+    async_db.add(pre_post)
+    await async_db.commit()
+
+    user1 = await async_db.scalar(
+        select(User)
+        .options(joinedload(User.posts))
+    )
+    
+
+    user2 = await async_db.scalar(
+        select(User)
+        .options(joinedload(User.posts))
+    )
+    
+    return [user1, user2]
 
 # pytest-asyncio provides event loop

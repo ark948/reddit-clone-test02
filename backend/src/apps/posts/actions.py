@@ -10,6 +10,7 @@ from src.sections.database.models import User, Post, Like
 from src.apps.posts import crud
 
 
+
 async def user_like_post(post_id: int, user: User, session: AsyncSession) -> dict | bool:
     try:
         postObj = await session.get(Post, post_id)
@@ -33,7 +34,9 @@ async def user_like_post(post_id: int, user: User, session: AsyncSession) -> dic
         return False
     return { "status": True, "message": "success" }
 
-async def user_remove_like_from_post(post_id: int, user: User, session: AsyncSession):
+
+
+async def user_remove_like_from_post(post_id: int, user: User, session: AsyncSession) -> dict:
     try:
         postObj = await session.get(Post, post_id)
     except Exception as error:
@@ -55,6 +58,7 @@ async def user_remove_like_from_post(post_id: int, user: User, session: AsyncSes
         return {"message": "Error occurred."}
     
 
+
 async def user_dislike_post(post_id: int, user: User, session: AsyncSession) -> dict[str, str]:
     postObj = await crud.get_post(post_id, session)
 
@@ -73,6 +77,7 @@ async def user_dislike_post(post_id: int, user: User, session: AsyncSession) -> 
         print("ERROR IN COMMIT", error)
         return {"message": "Error occurred."}
     
+
 
 async def user_remove_dislike_from_post(post_id: int, user: User, session: AsyncSession) -> dict[str, str]:
     postObj = await crud.get_post(post_id, session)
