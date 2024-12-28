@@ -11,7 +11,7 @@ from fastapi import (
 from src.apps.posts import schemas
 from src.sections.authentication.dependencies import getCurrentUserDep
 from src.sections.database.dependencies import AsyncSessionDep
-from src.apps.posts.deps import postServiceDep
+from src.apps.posts.dependencies import postServiceDep
 from src.apps.posts import actions
 
 
@@ -46,6 +46,16 @@ async def create_post(community_id: int, user: getCurrentUserDep, post_data: sch
             if resposne:
                 return resposne
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not a member of this community or it does not exist.")
+
+
+@router.put('/edit-post/{post_id}', response_model=schemas.PostModel | dict, status_code=status.HTTP_200_OK)
+async def edit_post(post_id: int, user: getCurrentUserDep, post_data: schemas.UpdatePost, session: AsyncSessionDep, ps: postServiceDep):
+    for post in user.posts:
+        if post_id == post.id:
+            response = await ps.update_post(post_id, user.id, post_data)
+            if response:
+                return response
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Error, Post not found, or does not belong to you. Please check your input.")
 
 
 @router.get('/get-user-posts', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)

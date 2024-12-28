@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -19,3 +20,8 @@ class PostModel(BaseModel):
 class CreatePost(BaseModel):
     title: str
     body: str
+
+
+class UpdatePost(BaseModel):
+    title: Optional[str] = None
+    body: Optional[str] = None

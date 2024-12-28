@@ -1,12 +1,18 @@
+from datetime import datetime
 from sqlmodel import select
 from dataclasses import dataclass
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from fastapi import Depends
+from icecream import ic
+ic.configureOutput(includeContext=True)
 
 
 from src.sections.database.connection import get_async_session
 from src.sections.database.models import User, Post
-from src.apps.posts.schemas import CreatePost
+from src.apps.posts.schemas import (
+    CreatePost,
+    UpdatePost
+)
 
 
 
@@ -37,3 +43,30 @@ class PostService:
         except Exception as error:
             print("ERROR IN COMMITTING post MODEL", error)
             return None
+        
+    async def update_post(self, post_id: int, user_id: int, new_post_data: UpdatePost) -> Post | dict:
+        try:
+            postObj_to_update = await self.session.get(Post, post_id)
+        except Exception as error:
+            print("POST NOT FOUND, ", error)
+            return None
+        
+        if postObj_to_update is not None:
+            update_data_dict = new_post_data.model_dump()
+            if update_data_dict["title"] == "" or update_data_dict["body"] == "":
+                return {"message": "Both title and Body cannot be empty"}
+            for k, v in update_data_dict.items():
+                setattr(postObj_to_update, k, v)
+            postObj_to_update.updated_at = datetime.now()
+        else:
+            return None
+        
+        try:
+            await self.session.commit()
+            return postObj_to_update
+        except Exception as error:
+            print("ERROR in commit update, ", error)
+            return None
+        
+
+        
