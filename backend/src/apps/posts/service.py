@@ -37,13 +37,3 @@ class PostService:
         except Exception as error:
             print("ERROR IN COMMITTING post MODEL", error)
             return None
-    
-    async def like_post(self, user_id: int, post_id: int) -> Post | None:
-        post_obj = await self.get_post(post_id)
-        post_obj.reactions += 1
-        try:
-            await self.session.commit()
-        except Exception as error:
-            print("ERROR IN LIKE post: ", error)
-            return None
-        return post_obj
