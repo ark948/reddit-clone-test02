@@ -12,7 +12,7 @@ from src.apps.communities.service import CommunityService
 async def test_community_service(async_db: AsyncSession, sample_community):
     response = await CommunityService(async_db).get_community(1)
 
-    assert isinstance(response, Community)
+    assert isinstance(response, Community) == True
     assert response.id == 1
     assert response.title == sample_community.title
     assert response.about == "Cool facts about technology."

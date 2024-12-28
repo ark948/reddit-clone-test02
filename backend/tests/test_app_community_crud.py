@@ -26,7 +26,7 @@ async def test_crud_create_community(async_db: AsyncSession):
     data_schema_obj = CreateCommunity(**data)
     response = await create_community(data_schema_obj, async_db)
 
-    assert isinstance(response, Community)
+    assert isinstance(response, Community) == True
     assert response.id == 1
     assert response.title == data["title"]
     assert response.about == "This is a community for testing..."
@@ -38,7 +38,7 @@ async def test_crud_create_community(async_db: AsyncSession):
 async def test_crud_get_community(sample_community, async_db):
     response = await get_community(1, async_db)
 
-    assert isinstance(response, Community)
+    assert isinstance(response, Community) == True
     assert response.id == 1
     assert response.title == sample_community.title
     assert response.about == "Cool facts about technology."
@@ -55,4 +55,4 @@ async def test_crud_get_all(multiple_communities, async_db):
     assert response[1].title == "co 2"
     assert response[2].about == "about co 3"
     assert response[0].users == []
-    assert isinstance(response[1], Community)
+    assert isinstance(response[1], Community) == True

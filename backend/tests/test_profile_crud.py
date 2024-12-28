@@ -16,7 +16,7 @@ from src.apps.profiles.crud import (
 async def test_profile_crud_get_profile(async_db: AsyncSession, sample_profile):
     profile_obj = await get_profile(sample_profile.id, sessino=async_db)
 
-    assert isinstance(profile_obj, Profile)
+    assert isinstance(profile_obj, Profile) == True
     assert profile_obj.id == sample_profile.id
     assert profile_obj.first_name == "Mike"
     assert profile_obj.last_name == "Cobalt"
@@ -27,7 +27,7 @@ async def test_profile_crud_create_profile(async_db: AsyncSession, sample_user):
     profile_obj = await create_profile(sample_user.id, async_db)
     
     assert profile_obj.id == 1
-    assert isinstance(profile_obj, Profile)
+    assert isinstance(profile_obj, Profile) == True
 
 @pytest.mark.asyncio
 async def test_profile_crud_update_profile(async_db: AsyncSession, sample_profile):

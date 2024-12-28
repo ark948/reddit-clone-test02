@@ -20,7 +20,7 @@ async def test_app_community_test_route(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_app_community_get_community(async_client: AsyncClient, sample_community):
-    assert isinstance(sample_community, Community)
+    assert isinstance(sample_community, Community) == True
     assert sample_community.id == 1
 
     response = await async_client.get('/apps/community/get-community/1')

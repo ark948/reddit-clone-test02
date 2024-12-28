@@ -151,9 +151,6 @@ async def sample_post(async_db: AsyncSession, sample_user, sample_community):
 
 @pytest_asyncio.fixture(scope="function")
 async def load_users_with_posts(async_db: AsyncSession):
-    # user
-    # community
-    # post
     pre_user = User(username="test01", email="test01@email.com", password_hash=generate_password_hash('test123'))
     pre_user2 = User(username="test02", email="test02@email.com", password_hash=generate_password_hash('test123'))
     pre_community = Community(title="tech_fans", about="Cool facts about technology.")
@@ -169,12 +166,14 @@ async def load_users_with_posts(async_db: AsyncSession):
     user1 = await async_db.scalar(
         select(User)
         .options(joinedload(User.posts))
+        .where(User.id==1)
     )
     
 
     user2 = await async_db.scalar(
         select(User)
         .options(joinedload(User.posts))
+        .where(User.id==2)
     )
     
     return [user1, user2]

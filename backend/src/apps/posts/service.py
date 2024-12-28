@@ -33,10 +33,10 @@ class PostService:
         try:
             self.session.add(post_obj)
             await self.session.commit()
+            return post_obj
         except Exception as error:
             print("ERROR IN COMMITTING post MODEL", error)
             return None
-        return post_obj
     
     async def like_post(self, user_id: int, post_id: int) -> Post | None:
         post_obj = await self.get_post(post_id)
