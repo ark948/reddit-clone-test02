@@ -58,6 +58,16 @@ async def edit_post(post_id: int, user: getCurrentUserDep, post_data: schemas.Up
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Error, Post not found, or does not belong to you. Please check your input.")
 
 
+@router.delete('/delete-post/{post_id}', response_model=None, status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep, ps: postServiceDep):
+    for post in user.posts:
+        if post_id == post.id:
+            response = await ps.delete_post(post_id, user.id)
+            if response == 1:
+                return None
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Error, Post not found, or does not belong to you. Please check your input.")
+
+
 @router.get('/get-user-posts', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)
 async def all_posts_of_user(user: getCurrentUserDep):
     return user.posts

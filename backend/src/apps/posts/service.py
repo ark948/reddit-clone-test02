@@ -68,5 +68,27 @@ class PostService:
             print("ERROR in commit update, ", error)
             return None
         
+    async def delete_post(self, post_id: int, user_id: int) -> int | None:
+        try:
+            postObj_to_delete = await self.session.get(Post, post_id)
+        except Exception as error:
+            print("POST NOT FOUND, ", error)
+            return None
+        
+        if postObj_to_delete is None:
+            return None
+        
+        try:
+            await self.session.delete(postObj_to_delete)
+        except Exception as error:
+            print("ERROR in DELETE: ", error)
+            return None
+        
+        try:
+            await self.session.commit()
+            return 1
+        except Exception as error:
+            print("ERROR in DELETE commit: ", error)
+            return None
 
         

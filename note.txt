@@ -163,6 +163,7 @@ running async tests with pytest: sometimes runs them with more than one backend,
 (run with pytest -v)
 
 docker run -p 6379:6379 -it redis/redis-stack:latest
+(-it flag is abbr for --interactive + --tty) it takes us straight to the container
 celery -A src.sections.tasks worker --loglevel=INFO --pool=solo
 alembic revision --autogenerate -m "message"
 alembic upgrade head
