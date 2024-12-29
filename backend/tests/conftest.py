@@ -159,23 +159,45 @@ async def load_users_with_posts(async_db: AsyncSession):
     async_db.add(pre_community)
     await async_db.commit()
 
-    pre_post = Post(title="First post", body="This is body.", owner_id=pre_user.id, community_id=pre_community.id)
-    async_db.add(pre_post)
-    await async_db.commit()
-
-    user1 = await async_db.scalar(
+    user = await async_db.scalar(
         select(User)
-        .options(joinedload(User.posts))
+        .options(joinedload(User.communities))
         .where(User.id==1)
     )
-    
+
+    user.communities.append(pre_community)
+    await async_db.commit()
+
+    post = Post(title="First post", body="This is body.", owner_id=1, community_id=1)
+    async_db.add(post)
+    user.posts.append(post)
+    await async_db.commit()
 
     user2 = await async_db.scalar(
         select(User)
         .options(joinedload(User.posts))
         .where(User.id==2)
     )
-    
-    return [user1, user2]
+    return [user, user2]
 
+
+@pytest_asyncio.fixture(scope="function")
+async def load_data(load_users_with_posts):
+    user1 = load_users_with_posts[0]
+    user2 = load_users_with_posts[1]
+
+    user1_token = create_access_token(
+        {
+            "email": user1.email,
+            "user_uid": str(user1.uid)
+        }
+    )
+
+    data = {
+        "user1": user1,
+        "user2": user2,
+        "user1Token": user1_token
+    }
+
+    return data
 # pytest-asyncio provides event loop
