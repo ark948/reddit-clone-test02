@@ -186,17 +186,23 @@ async def load_data(load_users_with_posts):
     user1 = load_users_with_posts[0]
     user2 = load_users_with_posts[1]
 
-    user1_token = create_access_token(
-        {
+    user1_token = create_access_token({
             "email": user1.email,
             "user_uid": str(user1.uid)
+        }
+    )
+
+    user2_token = create_access_token({
+            "email": user2.email,
+            "user_uid": str(user2.uid)
         }
     )
 
     data = {
         "user1": user1,
         "user2": user2,
-        "user1Token": user1_token
+        "user1Token": user1_token,
+        "user2Token": user2_token
     }
 
     return data

@@ -38,6 +38,7 @@ async def get_post(item_id: int, ps: postServiceDep):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No post with such id")
 
 
+
 @router.post('/create-post/{community_id}', response_model=schemas.PostModel | dict, status_code=status.HTTP_201_CREATED)
 async def create_post(community_id: int, user: getCurrentUserDep, post_data: schemas.CreatePost, session: AsyncSessionDep, ps: postServiceDep):
     for community in user.communities:
@@ -46,6 +47,7 @@ async def create_post(community_id: int, user: getCurrentUserDep, post_data: sch
             if resposne:
                 return resposne
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not a member of this community or it does not exist.")
+
 
 
 @router.put('/edit-post/{post_id}', response_model=schemas.PostModel | dict, status_code=status.HTTP_200_OK)
@@ -58,6 +60,7 @@ async def edit_post(post_id: int, user: getCurrentUserDep, post_data: schemas.Up
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Error, Post not found, or does not belong to you. Please check your input.")
 
 
+
 @router.delete('/delete-post/{post_id}', response_model=None, status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep, ps: postServiceDep):
     for post in user.posts:
@@ -66,6 +69,7 @@ async def delete_post(post_id: int, user: getCurrentUserDep, session: AsyncSessi
             if response == 1:
                 return None
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Error, Post not found, or does not belong to you. Please check your input.")
+
 
 
 @router.get('/get-user-posts', response_model=List[schemas.PostModel], status_code=status.HTTP_200_OK)
@@ -100,12 +104,14 @@ async def get_user_disliked_posts(user: getCurrentUserDep):
     return user.dislikes
 
 
+
 @router.post('/dislike-post/{post_id}', response_model=dict, status_code=status.HTTP_200_OK)
 async def add_user_dislike_post(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):
     response = await actions.user_dislike_post(post_id, user, session)
     if response:
         return response
     
+
 
 @router.post('/remove-dislike-from-post/{post_id}', response_model=dict, status_code=status.HTTP_200_OK)
 async def remove_user_dislike_from_post(post_id: int, user: getCurrentUserDep, session: AsyncSessionDep):

@@ -98,3 +98,48 @@ async def test_app_posts_routes_delete_post(async_client: AsyncClient, async_db:
     assert post_item == None
 
     
+@pytest.mark.asyncio
+async def test_app_posts_routes_get_user_posts(async_client: AsyncClient, async_db: AsyncSession, load_data):
+    response = await async_client.get('/apps/posts/get-user-posts', headers={
+        "Authorization": f"Bearer {load_data['user1Token']}"
+    })
+
+    assert response.status_code == 200
+
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]['id'] == load_data["user1"].posts[0].id
+
+
+@pytest.mark.asyncio
+async def test_app_posts_routes_user_liked_posts(async_client: AsyncClient, load_data):
+    response = await async_client.post(
+        url='/apps/posts/like-post/1',
+        headers={
+            "Authorization": f"Bearer {load_data['user2Token']}"
+        }
+    )
+
+    assert response.status_code == 200
+    assert len(load_data["user2"].likes) == 1
+    assert load_data["user2"].likes[0].id == 1
+    assert load_data["user2"].likes[0].owner_id == 1    
+
+
+@pytest.mark.asyncio
+async def test_app_posts_routes_user_like_post(async_client: AsyncClient, load_data):
+    response = await async_client.post(
+        url='/apps/posts/like-post/1',
+        headers={
+            "Authorization": f"Bearer {load_data['user2Token']}"
+        }
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["status"] == True
+    assert data["message"] == "success"
+    assert len(load_data["user2"].likes) == 1
+    assert load_data["user2"].likes[0].id == 1
+    assert load_data["user2"].likes[0].owner_id == 1

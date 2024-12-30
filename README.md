@@ -4,7 +4,7 @@
     . Create and join communities
     . Make posts
     . Like or dislike other user's posts
-    . other features comming...
+    . Other features comming...
     
     
 ### Tech Stack:
