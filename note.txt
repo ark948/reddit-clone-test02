@@ -149,6 +149,10 @@
     and just update that each time, instead of performing count on the likes table. (this will be done after succeessful implementation of likes table)
 
     now, doing the same thing for dislikes
+
+
+16. moving errors to their own section and apps.
+    global errors such as 500 will remain in errors.py in sections
     
 
 
