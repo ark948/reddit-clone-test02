@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 
-from src.sections.authentication.errors import (
+from src.sections.authentication.exceptions import (
     CustomException,
     UserAlreadyExists,
     UserNotFound,
