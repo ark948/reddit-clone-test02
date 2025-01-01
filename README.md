@@ -3,7 +3,8 @@
 ### Features:
     . Create and join communities
     . Make posts
-    . Like or dislike other user's posts
+    . Like or dislike other users' posts
+    . Comment on users' posts (Comments can also be liked and disliked)
     . Other features comming...
     
     
