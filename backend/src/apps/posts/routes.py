@@ -1,4 +1,6 @@
 from typing import List
+from sqlmodel import select
+from sqlalchemy.orm import joinedload
 from fastapi import (
     APIRouter,
     status,
@@ -13,6 +15,8 @@ from src.sections.authentication.dependencies import getCurrentUserDep
 from src.sections.database.dependencies import AsyncSessionDep
 from src.apps.posts.dependencies import postServiceDep
 from src.apps.posts import actions
+from src.sections.database.models import Post
+from src.apps.comments.router import CommentModel
 
 
 
@@ -36,6 +40,26 @@ async def get_post(item_id: int, ps: postServiceDep):
     if resposne:
         return resposne
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No post with such id")
+
+
+
+@router.get('/get-post-with-comments/{item_id}', response_model=List[CommentModel], status_code=status.HTTP_200_OK)
+async def get_post_with_comments(item_id: int, ps: postServiceDep):
+    resposne = await ps.get_post(item_id)
+    if resposne:
+        return resposne.comments
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No post with such id")
+
+
+@router.get('/get-post-with-comments-v2/{item_id}', response_model=schemas.PostWithComments, status_code=status.HTTP_200_OK)
+async def get_post_with_comments_v2(item_id: int, session: AsyncSessionDep):
+    try:
+        stmt = select(Post).options(joinedload(Post.comments)).where(Post.id==item_id)
+        postObj = await session.scalar(stmt)
+        return postObj
+    except Exception as error:
+        print("ERROR: ", error)
+        raise HTTPException(status_code=500)
 
 
 

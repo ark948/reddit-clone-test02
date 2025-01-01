@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 from datetime import datetime
 
 
-from src.sections.database.models import User
+from src.sections.database.models import User, Comment
 
 
 class PostModel(BaseModel):
@@ -13,6 +13,18 @@ class PostModel(BaseModel):
     reactions: int
     owner_id: int
     community_id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class PostWithComments(BaseModel):
+    id: int
+    title: str
+    body: str
+    reactions: int
+    owner_id: int
+    community_id: int
+    comments: Optional[List[Comment]] = None
     created_at: datetime
     updated_at: datetime
 

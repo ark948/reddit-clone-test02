@@ -153,6 +153,10 @@
 
 16. moving errors to their own section and apps.
     global errors such as 500 will remain in errors.py in sections
+
+17. adding comment model, (each post can have many comments, each comment can only have one author and can belong to only one post)
+    there was a problem: forgot to add table name
+    made another migration for it (seems ok)
     
 
 

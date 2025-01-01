@@ -47,6 +47,7 @@ class User(SQLModel, table=True):
         sa_relationship_kwargs={"lazy": "selectin"}
     )
     posts: List["Post"] = Relationship(back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"})
+    comments: List["Comment"] = Relationship(back_populates="author", sa_relationship_kwargs={"lazy": "selectin"})
     profile_id: Optional[int] = Field(default=None, foreign_key="profiles.id")
     profile: Optional["Profile"] = Relationship(back_populates="user")
     likes: List["Post"] = Relationship(
@@ -92,6 +93,7 @@ class Post(SQLModel, table=True):
     owner_id: int = Field(default=None, foreign_key="users.id")
     community: Community = Relationship(back_populates="posts")
     community_id: int = Field(default=None, foreign_key="communities.id")
+    comments: List["Comment"] = Relationship(back_populates="post", sa_relationship_kwargs={"lazy": "selectin"})
     liked_by: List["User"] = Relationship(
         link_model=Like,
         back_populates="likes",
@@ -104,6 +106,18 @@ class Post(SQLModel, table=True):
     )
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+
+
+class Comment(SQLModel, table=True):
+    __tablename__ = "comments"
+
+    id: int = Field(primary_key=True)
+    content: str = Field(nullable=False)
+    reactions: int = Field(default=0, nullable=False)
+    author: User = Relationship(back_populates="comments")
+    author_id: int = Field(default=None, foreign_key="users.id")
+    post: Post = Relationship(back_populates="comments")
+    post_id: int = Field(default=None, foreign_key="posts.id")
 
 
 class Profile(SQLModel, table=True):
