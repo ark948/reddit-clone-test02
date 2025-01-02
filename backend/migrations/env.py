@@ -15,6 +15,8 @@ from src.sections.database.models import Post
 from src.sections.database.models import Like
 from src.sections.database.models import Dislike
 from src.sections.database.models import Comment
+from src.sections.database.models import Tag
+from src.sections.database.models import PostTag
 from sqlmodel import SQLModel
 from src.configs.settings import Config
 

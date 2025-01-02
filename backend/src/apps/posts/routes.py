@@ -17,6 +17,7 @@ from src.apps.posts.dependencies import postServiceDep
 from src.apps.posts import actions
 from src.sections.database.models import Post
 from src.apps.comments.router import CommentModel
+from src.apps.posts import crud
 
 
 
@@ -60,6 +61,13 @@ async def get_post_with_comments_v2(item_id: int, session: AsyncSessionDep):
     except Exception as error:
         print("ERROR: ", error)
         raise HTTPException(status_code=500)
+    
+
+@router.get('/get-post-with-tags/{item_id}', response_model=schemas.PostWithTags, status_code=status.HTTP_200_OK)
+async def get_post_with_tags(item_id: int, session: AsyncSessionDep):
+    resposne = await crud.get_post(item_id, session)
+    return resposne
+
 
 
 

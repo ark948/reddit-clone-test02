@@ -3,7 +3,11 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-from src.sections.database.models import User, Comment
+from src.sections.database.models import (
+    User, 
+    Comment, 
+    Tag
+)
 
 
 class PostModel(BaseModel):
@@ -13,6 +17,31 @@ class PostModel(BaseModel):
     reactions: int
     owner_id: int
     community_id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class PostWithTags(BaseModel):
+    id: int
+    title: str
+    body: str
+    reactions: int
+    owner_id: int
+    community_id: int
+    tags: Optional[List[Tag]]
+    created_at: datetime
+    updated_at: datetime
+
+
+class PostWithTagsAndComments(BaseModel):
+    id: int
+    title: str
+    body: str
+    reactions: int
+    owner_id: int
+    community_id: int
+    tags: Optional[List[Tag]]
+    comments: Optional[List[Comment]]
     created_at: datetime
     updated_at: datetime
 
