@@ -27,6 +27,12 @@ app.include_router(auth_router)
 app.include_router(apps_router)
 
 
+@app.get("", response_model=str, status_code=200)
+@app.get("/", response_model=str, status_code=200)
+async def root() -> str:
+    return "root"
+
+
 @app.get('/test')
 async def test_route():
     return {"message": "test successful"}

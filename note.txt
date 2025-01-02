@@ -158,6 +158,22 @@
     there was a problem: forgot to add table name
     made another migration for it (seems ok)
     
+18. adding pagination to posts app
+    > pip install fastapi-pagination
+
+
+19. add search functionality to communities, posts
+    read operation in crud (or get) has 3 different variations: get one, get some, get all
+    i have implemented get one and get all, but getting some results remain (basically search by specific criteria)
+
+    Also posts and communities can have tags.
+    so implement Tag model
+
+20. add:
+    logging
+    metrics
+    monitoring
+    tracing
 
 
 users:

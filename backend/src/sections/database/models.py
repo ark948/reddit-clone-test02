@@ -15,6 +15,11 @@ class UserCommunity(SQLModel, table=True):
     community_id: int = Field(default=None, foreign_key="communities.id", primary_key=True)
 
 
+class PostTag(SQLModel, table=True):
+    post_id: int = Field(default=None, foreign_key="posts.id", primary_key=True)
+    tag_id: int = Field(default=None, foreign_key="tags.id", primary_key=True)
+
+
 class Like(SQLModel, table=True):
     __tablename__ = "likes"
 
@@ -82,6 +87,23 @@ class Community(SQLModel, table=True):
 
 
 
+class Tag(SQLModel, table=True):
+    __tablename__ = "tags"
+
+    id: int = Field(primary_key=True)
+    name: str = Field(nullable=False, unique=True)
+    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    posts: List["Post"] = Relationship(
+        link_model=PostTag,
+        back_populates="tags",
+        sa_relationship_kwargs={"lazy":"selectin"}
+    )
+
+    def __repr__(self) -> str:
+        return f"<Tag {self.name}"
+
+
+
 class Post(SQLModel, table=True):
     __tablename__ = "posts"
 
@@ -94,6 +116,11 @@ class Post(SQLModel, table=True):
     community: Community = Relationship(back_populates="posts")
     community_id: int = Field(default=None, foreign_key="communities.id")
     comments: List["Comment"] = Relationship(back_populates="post", sa_relationship_kwargs={"lazy": "selectin"})
+    tags: List[Tag] = Relationship(
+        link_model=PostTag,
+        back_populates="posts",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
     liked_by: List["User"] = Relationship(
         link_model=Like,
         back_populates="likes",
@@ -118,6 +145,7 @@ class Comment(SQLModel, table=True):
     author_id: int = Field(default=None, foreign_key="users.id")
     post: Post = Relationship(back_populates="comments")
     post_id: int = Field(default=None, foreign_key="posts.id")
+
 
 
 class Profile(SQLModel, table=True):
