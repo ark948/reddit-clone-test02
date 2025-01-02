@@ -27,16 +27,18 @@
 #### Apps:
         This is where project specific-features exist.
         by "project-specific" i mean parts that different platforms do not share...
-        for example, an e-commerce platform will almost definitely have a "cart" feature where users can review the items they wish to purchase and the total price, before they confirm and pay for their purchase.
-        But a social/forum platform like Reddit does not have that. Instead it has dedicated parts that users can view posts and search for communities of their interest.
+        e.g. an e-commerce platform will have a "cart" feature with which users can review their selected items and the total price, 
+        before they confirm the purchase.
+        But a social/forum platform (like reddit) does not have that. 
+        Instead it has dedicated parts that users can view posts and search for communities that ineterests them.
         
 #### Configs:
         Just where i keep global-level variables.
-        (May not be the best, you're encouraged to change this according to your own preference)
+        (May not be the best. change this according to your own preference)
         
 #### Sections:
         This is where common backend parts of the application exist.
-        Essential parts that almost all projects will comprise, such as Database and Authentication.
+        Essential parts that almost all projects will comprise, e.g. Database and Authentication....
         
 
     
