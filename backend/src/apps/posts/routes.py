@@ -70,6 +70,12 @@ async def get_post_with_tags(item_id: int, session: AsyncSessionDep):
 
 
 
+@router.get('/get-post-with-tags-comments/{item_id}', response_model=schemas.PostWithTagsAndComments, status_code=status.HTTP_200_OK)
+async def get_post_with_tags_and_comments(item_id: int, session: AsyncSessionDep):
+    resposne = await crud.get_post(item_id, session)
+    return resposne
+
+
 
 @router.post('/create-post/{community_id}', response_model=schemas.PostModel | dict, status_code=status.HTTP_201_CREATED)
 async def create_post(community_id: int, user: getCurrentUserDep, post_data: schemas.CreatePost, session: AsyncSessionDep, ps: postServiceDep):
