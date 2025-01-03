@@ -38,6 +38,15 @@ class TagAddToPost(BaseModel):
     tags: List[CreateTagSchema]
 
 
+class GetTags(BaseModel):
+    # this was solely made to be used with GetPostsWithTags
+    name: str
+
+
+class GetPostsWithTags(BaseModel):
+    tags: List[GetTags]
+
+
 
 async def add_tags_to_post_action(post_item: Post, tags_list: TagAddToPost, session: AsyncSessionDep) -> Post:
     for tag_item in tags_list.tags:

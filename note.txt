@@ -164,6 +164,9 @@
 
 19. add search functionality to communities, posts
     read operation in crud (or get) has 3 different variations: get one, get some, get all
+    get one (done)
+    get some
+    get all (done)
     i have implemented get one and get all, but getting some results remain (basically search by specific criteria)
 
     Also posts and communities can have tags. (done)

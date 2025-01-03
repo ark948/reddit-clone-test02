@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from pydantic.main import TupleGenerator
 from sqlalchemy.dialects import postgresql as pg
 from sqlalchemy.types import Text
 from sqlalchemy import ForeignKey
@@ -100,8 +101,11 @@ class Tag(SQLModel, table=True):
     )
 
     def __repr__(self) -> str:
-        return f"<Tag {self.name}"
+        return f"<Tag {self.name}>"
 
+    def __iter__(self):
+        for field in [self.id, self.name, self.created_at]:
+            yield field
 
 
 class Post(SQLModel, table=True):
