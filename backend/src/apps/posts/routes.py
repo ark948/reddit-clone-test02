@@ -79,19 +79,6 @@ async def get_post_with_tags_and_comments(item_id: int, session: AsyncSessionDep
 
 
 
-@router.get('/get-posts-with-certain-tags', response_model=None, status_code=status.HTTP_200_OK)
-async def get_posts_with_certain_tags(list_of_tags: GetPostsWithTags, session: AsyncSessionDep):
-    response = await actions.select_posts_with_tags(list_of_tags, session)
-    return response
-
-
-
-@router.get('/get-posts-with-certain-tags-v2', response_model=None, status_code=status.HTTP_200_OK)
-async def get_posts_with_certain_tags_v2(list_of_tags: TagsList, session: AsyncSessionDep):
-    response = await actions.select_posts_with_tags_v2(list_of_tags, session)
-    return response
-
-
 
 @router.post('/create-post/{community_id}', response_model=schemas.PostModel | dict, status_code=status.HTTP_201_CREATED)
 async def create_post(community_id: int, user: getCurrentUserDep, post_data: schemas.CreatePost, session: AsyncSessionDep, ps: postServiceDep):
