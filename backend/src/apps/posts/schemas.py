@@ -58,6 +58,11 @@ class PostWithComments(BaseModel):
     updated_at: datetime
 
 
+class PostsWithCertainTags(BaseModel):
+    title: str
+    body: str
+
+
 class CreatePost(BaseModel):
     title: str
     body: str

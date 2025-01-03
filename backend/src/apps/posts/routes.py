@@ -18,6 +18,8 @@ from src.apps.posts import actions
 from src.sections.database.models import Post
 from src.apps.comments.router import CommentModel
 from src.apps.posts import crud
+from src.apps.tags.main import GetPostsWithTags
+from src.apps.posts.actions import TagsList
 
 
 
@@ -76,15 +78,14 @@ async def get_post_with_tags_and_comments(item_id: int, session: AsyncSessionDep
     return resposne
 
 
-from src.apps.tags.main import GetPostsWithTags
+
 @router.get('/get-posts-with-certain-tags', response_model=None, status_code=status.HTTP_200_OK)
 async def get_posts_with_certain_tags(list_of_tags: GetPostsWithTags, session: AsyncSessionDep):
     response = await actions.select_posts_with_tags(list_of_tags, session)
     return response
 
 
-from src.apps.tags.main import GetPostsWithTags
-from src.apps.posts.actions import TagsList
+
 @router.get('/get-posts-with-certain-tags-v2', response_model=None, status_code=status.HTTP_200_OK)
 async def get_posts_with_certain_tags_v2(list_of_tags: TagsList, session: AsyncSessionDep):
     response = await actions.select_posts_with_tags_v2(list_of_tags, session)

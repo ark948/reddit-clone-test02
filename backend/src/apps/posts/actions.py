@@ -4,9 +4,14 @@ from sqlalchemy import and_, or_
 from sqlalchemy.orm import joinedload
 from icecream import ic
 ic.configureOutput(includeContext=True)
+from pydantic import BaseModel
+from typing import List
+from src.apps.utils import myprint
 
 
-from src.apps.tags.main import GetPostsWithTags
+from src.apps.tags.main import (
+    GetPostsWithTags, TagsList
+    )
 from src.sections.database.models import User, Post, Like, Tag, PostTag
 from src.apps.posts import crud
 
@@ -109,14 +114,12 @@ async def select_posts_with_tags(list_of_tags: GetPostsWithTags, session: AsyncS
     #     stmt = select(Tag).where(Tag.name==item.name)
     #     result = await session.scalar(stmt)
     #     selected_tag_objs.append(result)
-    # print("\n", selected_tag_objs,"\n")
 
     # for tag in selected_tag_objs:
     #     # stmt = select(Post).where(Tag.id==tag.id) THIS ALSO WORKS but raises a warning
     #     stmt = select(Post).select_
     #     result = await session.scalar(stmt)
     #     selected_posts.append(result)
-    # print("\n", selected_posts ,"\n")
 
     selected_tag_objs = []
     selected_posts_ids = []
@@ -124,14 +127,12 @@ async def select_posts_with_tags(list_of_tags: GetPostsWithTags, session: AsyncS
         stmt = select(Tag).where(Tag.name==item.name)
         result = await session.scalar(stmt)
         selected_tag_objs.append(result)
-    print("\n", selected_tag_objs,"\n")
     
     for tag_item in selected_tag_objs:
         stmt = select(PostTag).where(PostTag.tag_id==tag_item.id)
         result = await session.scalars(stmt)
         for i in result.all():
             selected_posts_ids.append(i.post_id)
-    print("\n", selected_posts_ids, "\n")
     
     actual_post_items = []
     for post_id in selected_posts_ids:
@@ -140,16 +141,7 @@ async def select_posts_with_tags(list_of_tags: GetPostsWithTags, session: AsyncS
     return actual_post_items
 
 
-from pydantic import BaseModel
-from typing import List
-from src.apps.utils import myprint
 
-class TagsList(BaseModel):
-    names: List[str]
-
-class PostsWithCertainTags(BaseModel):
-    title: str
-    body: str
 
 async def select_posts_with_tags_v2(list_of_tags: TagsList, session: AsyncSession):
     
@@ -158,8 +150,6 @@ async def select_posts_with_tags_v2(list_of_tags: TagsList, session: AsyncSessio
             .where(Tag.name.in_([*list_of_tags.names]))
         )
     tag_ids = result.all()
-    myprint(tag_ids)
-
 
     result = await session.scalars(
         select(Post)
