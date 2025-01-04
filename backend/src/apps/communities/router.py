@@ -1,4 +1,5 @@
 from icecream import ic
+from typing import Optional, List
 ic.configureOutput(includeContext=True)
 from typing import (
     List,
@@ -18,6 +19,7 @@ from fastapi import (
 # local imports
 from src.sections.database.models import Community
 from src.apps.communities import crud
+from src.apps.communities import search
 from src.sections.database.dependencies import AsyncSessionDep
 from src.sections.authentication.dependencies import getCurrentUserDep
 from src.apps.communities import actions
@@ -40,10 +42,12 @@ router = APIRouter(
 async def community_test_route():
     return 'community test route'
 
+
 @router.get('/get-community/{item_id}', response_model=CommunityModel, status_code=status.HTTP_200_OK)
 async def get_community(item_id: int, session: AsyncSessionDep):
     response = await crud.get_community(item_id, session)
     return response
+
 
 @router.get('/get-community-v2', response_model=Union[CommunityModel, None], status_code=status.HTTP_200_OK)
 async def get_community_v2(item_id: Annotated[int, Body(embed=True)], service: Annotated[CommunityService, Depends(get_community_service_dep)]):
@@ -89,6 +93,7 @@ async def get_no_of_community_members(item_id: int, session: AsyncSessionDep):
     community_obj = await crud.get_community(item_id, session)
     members_count = len(community_obj.users)
     return members_count
+
 
 @router.get('/joined-count', response_model=int, status_code=status.HTTP_200_OK)
 async def get_no_of_communities_joined_by_user(user: getCurrentUserDep, session: AsyncSessionDep):

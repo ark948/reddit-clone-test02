@@ -28,3 +28,7 @@ class CreateCommunity(BaseModel):
     about: str
 
 
+class CommunityModelForSearch(BaseModel):
+    id: int
+    title: str
+    about: str
