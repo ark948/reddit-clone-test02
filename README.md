@@ -20,9 +20,17 @@
 
 ### How is this project structured:
     . Project has 3 main parts:
-        . apps
-        . configs
-        . sections
+        backend:
+                . apps          --> (Project specific features)
+                        . a bunch of apps... --> (dedicated folders for each app)
+                        . endpoints.py       --> (all apps routers will be connected to one router to keep things tidy)
+                        . utils.py           --> (global level utility functions)
+                . configs       --> (Configuration variables)
+                . sections      --> (Common backend functionalities)
+                main.py         --> (main application instance)
+            runserver.py     --> (uvicorn server entry point)
+
+
         
 #### Apps:
         This is where project specific-features exist.
