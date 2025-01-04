@@ -1,4 +1,5 @@
 from typing import Optional, List
+from pydantic import BaseModel
 from fastapi import (
     APIRouter,
     status
@@ -15,7 +16,7 @@ from src.apps.posts import search as posts_search
 from src.apps.tags.main import GetPostsWithTags, TagsList
 from src.sections.database.dependencies import AsyncSessionDep
 from src.apps.communities import search as community_search
-from src.apps.communities.schemas import CommunityModelForSearch
+from src.apps.communities.schemas import CommunityModelForSearch, CommunitySearchData
 
 
 
@@ -33,9 +34,6 @@ async def get_posts_with_certain_tags_v2(list_of_tags: TagsList, session: AsyncS
     return response
 
 
-from pydantic import BaseModel
-class CommunitySearchData(BaseModel):
-    title: str
 
 
 @router.get('/community', response_model=Optional[List[CommunityModelForSearch]], status_code=status.HTTP_200_OK)

@@ -32,3 +32,7 @@ class CommunityModelForSearch(BaseModel):
     id: int
     title: str
     about: str
+
+
+class CommunitySearchData(BaseModel):
+    title: str
