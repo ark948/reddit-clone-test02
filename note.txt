@@ -204,6 +204,29 @@ list of images for docker compose:
     gunicorn
 
 - step one, moving from local postgresql to docker postgresql + docker newtork + docker volume
+> docker run -e POSTGRES_PASSWORD=1234 postgres:13 (make sure to specify the version so docker does not download the latest version)
+update: (give the container a name, so docker does not create a new one everytime)
+
+> docker run -e POSTGRES_PASSWORD=1234 --name=project_db postgres:13
+then this container can be stopped using docker stop <container name>
+and started using start command:
+> docker start <ContainerName>
+example: docker start project_db
+to enter the container: (to be able to interact with it) (container must be running) (for example for postgresql)
+> docker exec -it project_db psql -U postgres
+you need to enter postgresql database container and create the user role and the database and grant privileges
+i also downloaded all whl files into whls folder that is ignored
+
+operations to run on database container:
+create database reddit_clone_db;
+create user myuser with encrypted password '1234';
+grant all privileges on database reddit_clone_db to myuser;
+
+not entirely sure about this (i don't think i need this):
+psql -h localhost -p 5432 postgres
+
+NOTE: Docker volumes will be created if not exist. (using docker-compose)
+docker-compose up -d
 
 running async tests with pytest: sometimes runs them with more than one backend, this is why the number of tests are weird.
 (run with pytest -v)

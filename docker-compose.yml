@@ -1,0 +1,46 @@
+services:
+  web:
+    build: .
+    ports:
+      - "80:80"
+    command: python3 backend/runserver.py
+    volumes:
+      - .:/data
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-net
+
+  db:
+    image: postgres:13
+
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_DB: reddit_clone_db
+      POSTGRES_PASSWORD: 1234
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+    networks:
+      - app-net
+
+  redis:
+    image: redis/redis-stack
+
+    ports:
+     - "6379:6379"
+
+    networks:
+     - app-net
+
+volumes:
+  pg-data:
+
+networks:
+  app-net:
+    driver: bridge
