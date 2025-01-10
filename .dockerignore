@@ -1,4 +1,18 @@
-env
-.env
+# Git
 .git
 .gitignore
+.gitattributes
+
+
+
+
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+*.pyc
+
+
+.venv/
+venv/
+
+
+.vscode/

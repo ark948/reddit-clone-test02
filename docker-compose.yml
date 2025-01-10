@@ -3,7 +3,13 @@ services:
     build: .
     ports:
       - "80:80"
-    command: python3 backend/runserver.py
+    environment:
+      DB_URL: ${DB_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      REDIS_URL: ${REDIS_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+    command: bash -c "cd backend && alembic upgrade head && cd .. && uvicorn backend.main:app --host 0.0.0.0 --port 80"
     volumes:
       - .:/data
     depends_on:
@@ -17,8 +23,8 @@ services:
 
     environment:
       POSTGRES_USER: myuser
-      POSTGRES_DB: reddit_clone_db
       POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: reddit_clone_db
 
     ports:
       - "5432:5432"

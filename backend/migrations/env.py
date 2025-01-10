@@ -7,18 +7,18 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from src.sections.database.models import User
-from src.sections.database.models import Profile
-from src.sections.database.models import Community
-from src.sections.database.models import UserCommunity
-from src.sections.database.models import Post
-from src.sections.database.models import Like
-from src.sections.database.models import Dislike
-from src.sections.database.models import Comment
-from src.sections.database.models import Tag
-from src.sections.database.models import PostTag
+from sections.database.models import User
+from sections.database.models import Profile
+from sections.database.models import Community
+from sections.database.models import UserCommunity
+from sections.database.models import Post
+from sections.database.models import Like
+from sections.database.models import Dislike
+from sections.database.models import Comment
+from sections.database.models import Tag
+from sections.database.models import PostTag
 from sqlmodel import SQLModel
-from src.configs.settings import Config
+from settings import Config
 
 database_url = Config.DB_URL
 

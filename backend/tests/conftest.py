@@ -24,14 +24,14 @@ from unittest.mock import MagicMock
 
 
 # local imports
-from src import app
-from src.sections.redis import get_redis
-from src.sections import redis
-from src.sections.authentication.utils import create_access_token
-from src.sections.database.dependencies import get_async_session
-from src.sections.authentication.hash import generate_password_hash
-from src.configs.settings import Config
-from src.sections.database.models import (
+from main import app
+from sections.redis import get_redis
+from sections import redis
+from sections.authentication.utils import create_access_token
+from sections.database.dependencies import get_async_session
+from sections.authentication.hash import generate_password_hash
+from settings import Config
+from sections.database.models import (
     User,
     Community,
     Profile,
